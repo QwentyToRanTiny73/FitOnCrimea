@@ -9,7 +9,7 @@ export function Footer() {
             Фитон <span className="text-brand-gold">Крым</span>
           </p>
           <p className="mt-3 text-sm text-brand-beige/80 leading-relaxed">
-            Авторская натуральная косметика на крымских травах. С 2009 года.
+            Натуральная косметика на крымских травах. С 2009 года.
           </p>
         </div>
         <div>
@@ -28,6 +28,14 @@ export function Footer() {
                 className="hover:text-brand-gold transition-colors"
               >
                 Каталог
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/massage-points"
+                className="hover:text-brand-gold transition-colors"
+              >
+                Точки массажа
               </Link>
             </li>
             <li>

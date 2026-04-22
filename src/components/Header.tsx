@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 const NAV_ITEMS = [
   { href: "/", label: "Главная" },
   { href: "/catalog", label: "Каталог" },
+  { href: "/massage-points", label: "Точки массажа" },
   { href: "/about", label: "О бренде" },
   { href: "/contacts", label: "Контакты" },
 ];

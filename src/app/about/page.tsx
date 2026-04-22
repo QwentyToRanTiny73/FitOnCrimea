@@ -1,80 +1,78 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
+import {
+  BotanicalBranch,
+  BotanicalDivider,
+  BotanicalWreath,
+} from "@/components/Botanical";
 
 export const metadata: Metadata = {
   title: "О бренде",
   description:
-    "История, философия и производственные принципы «Фитон Крым» — авторской марки натуральной косметики из Крыма с 2009 года.",
+    "«Фитон Крым» — линия натуральной косметики из Крыма с 2009 года. Фармакопейные принципы, крымское растительное сырьё, акварельная упаковка.",
 };
 
-const VALUES = [
+const SECTIONS = [
   {
-    title: "Авторские рецептуры",
-    text: "Каждый бальзам разработан по фармакопейным принципам и прошёл годы практического применения.",
+    title: "Сырьё",
+    text: "Эфирные масла, экстракты и инфузии — из растений, собранных и переработанных в Крыму: лаванда, чабрец, роза, хвоя, облепиха, шиповник, софора, гинкго.",
   },
   {
-    title: "Крымское сырьё",
-    text: "Эфирные масла, экстракты и инфузии — из растений, собранных в предгорьях Крыма.",
+    title: "Рецептуры",
+    text: "Составы выверены по фармакопейным принципам: концентрации активных веществ, совместимость, воспроизводимость от партии к партии.",
   },
   {
-    title: "Ручной труд",
-    text: "Небольшие партии варятся вручную: без консервантов массового производства и без спешки.",
+    title: "Производство",
+    text: "Бальзамы варятся малыми партиями, без консервантов массового производства. Упаковка — в стеклянные баночки 15 г с акварельной этикеткой.",
   },
   {
-    title: "Узнаваемый стиль",
-    text: "Акварельные иллюстрации на упаковке — визитная карточка бренда с первых выпусков.",
+    title: "Ассортимент",
+    text: "Более 20 бальзамов для лица, тела, суставов и дыхательной системы, мыло ручной работы, монастырская коллекция и бальзамы для губ.",
   },
 ];
 
 export default function AboutPage() {
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-20">
-      <header className="text-center mb-16">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
+      <header className="text-center mb-12">
+        <BotanicalWreath className="mx-auto h-16 text-brand-gold mb-4" />
         <p className="uppercase tracking-[0.25em] text-xs text-brand-gold mb-4">
           О бренде
         </p>
         <h1 className="font-serif text-4xl sm:text-5xl text-brand-green">
-          Косметика, которую делают в Крыму
+          Herbarium Tauricum
         </h1>
-        <p className="mt-6 max-w-2xl mx-auto text-brand-green/75">
-          «Фитон Крым» — это разговор о природе полуострова на языке бальзамов:
-          чабрец, лаванда, хвоя, роза, облепиха и десятки других растений,
-          собранные в узнаваемые баночки с акварельной этикеткой.
+        <BotanicalDivider className="my-6" />
+        <p className="max-w-2xl mx-auto text-brand-green/80 font-serif italic text-lg">
+          Травяная аптека Крыма на языке бальзамов — чабрец, лаванда, хвоя,
+          роза, облепиха и десятки других растений в узнаваемых баночках с
+          акварельной этикеткой.
         </p>
       </header>
 
-      <section className="grid md:grid-cols-2 gap-10 items-center mb-20">
-        <div className="relative aspect-[4/5] rounded-2xl overflow-hidden">
-          <Image
-            src="https://images.unsplash.com/photo-1445264718234-a623be589d37?auto=format&fit=crop&w=900&q=80"
-            alt="Крымские травы"
-            fill
-            sizes="(max-width: 768px) 100vw, 500px"
-            className="object-cover"
-          />
-        </div>
+      <section className="grid md:grid-cols-[auto_1fr] gap-8 items-start mb-20">
+        <BotanicalBranch className="h-[320px] mx-auto text-brand-green/50" />
         <div>
           <h2 className="font-serif text-3xl text-brand-green">
-            История с 2009 года
+            Линия с 2009 года
           </h2>
-          <p className="mt-4 text-brand-green/80 leading-relaxed">
-            Бренд «Фитон Крым» появился в 2009 году как лаборатория небольшого
-            масштаба. За основу взяли классические фармакопейные принципы:
+          <BotanicalDivider className="my-5" />
+          <p className="text-brand-green/80 leading-relaxed">
+            «Фитон Крым» — линия натуральной косметики, которая развивается с
+            2009 года. За основу взяты классические фармакопейные принципы:
             выверенные концентрации активных веществ, воспроизводимость и
             чистота рецептур.
           </p>
           <p className="mt-4 text-brand-green/80 leading-relaxed">
-            Постепенно линейка выросла до более чем двадцати бальзамов, мыла
-            ручной работы и бальзамов для губ. Часть рецептур пришла из
-            монастырской традиции, часть родилась в результате работы с
-            крымским сырьём.
+            Часть рецептур опирается на монастырскую традицию, часть создана
+            при работе с крымским сырьём. За годы линия выросла до более чем
+            двадцати бальзамов, мыла ручной работы и бальзамов для губ.
           </p>
         </div>
       </section>
 
       <section className="grid sm:grid-cols-2 gap-6 mb-20">
-        {VALUES.map((item) => (
+        {SECTIONS.map((item) => (
           <div
             key={item.title}
             className="p-6 bg-white/60 border border-brand-green/10 rounded-xl"
@@ -91,12 +89,13 @@ export default function AboutPage() {
 
       <section className="text-center">
         <h2 className="font-serif text-3xl text-brand-green">
-          Где попробовать
+          Где купить
         </h2>
+        <BotanicalDivider className="my-5" />
         <p className="mt-4 max-w-xl mx-auto text-brand-green/75">
           Основной канал продаж — магазин бренда на Ozon. Полный каталог
-          продуктов доступен на сайте, с каждой карточки можно перейти на
-          маркетплейс для оформления заказа.
+          доступен на сайте, с каждой карточки можно перейти на маркетплейс
+          для оформления заказа.
         </p>
         <Link
           href="/catalog"

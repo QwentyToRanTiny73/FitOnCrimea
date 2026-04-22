@@ -56,7 +56,7 @@ export const products: Product[] = [
     tagline: "Чайное дерево",
     category: "balm",
     subcategory: "body",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Регенерирующий бальзам широкого спектра действия — помощник в домашней аптечке.",
@@ -86,7 +86,7 @@ export const products: Product[] = [
     tagline: "Ним и иланг-иланг",
     category: "balm",
     subcategory: "hair",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Укрепление и стимуляция роста волос, нормализация микрофлоры кожи головы.",
@@ -119,7 +119,7 @@ export const products: Product[] = [
     tagline: "Календула и кайепут",
     category: "balm",
     subcategory: "face",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Точечный уход против акне, комедонов и воспалений.",
@@ -149,7 +149,7 @@ export const products: Product[] = [
     tagline: "Розмарин и софора",
     category: "balm",
     subcategory: "body",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Поддержка венозного тонуса, уменьшение тяжести и отёчности в ногах.",
@@ -183,7 +183,7 @@ export const products: Product[] = [
     tagline: "Иглица и виноград",
     category: "balm",
     subcategory: "body",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Улучшает капиллярное кровообращение, помогает при «холодных руках и ногах».",
@@ -215,7 +215,7 @@ export const products: Product[] = [
     tagline: "Лавр и корица",
     category: "balm",
     subcategory: "respiratory",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Крымский аналог «звёздочки» для простуды и головной боли.",
@@ -250,7 +250,7 @@ export const products: Product[] = [
     tagline: "Чабрец",
     category: "balm",
     subcategory: "respiratory",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Бестселлер бренда — помощь при первых признаках простуды.",
@@ -284,7 +284,7 @@ export const products: Product[] = [
     tagline: "Анис и ромашка",
     category: "balm",
     subcategory: "respiratory",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Облегчает кашель, поддерживает органы дыхания.",
@@ -316,7 +316,7 @@ export const products: Product[] = [
     tagline: "Пихта и красный перец",
     category: "balm",
     subcategory: "joints",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Глубокое прогревание суставов и мышц, разогрев перед нагрузкой.",
@@ -348,7 +348,7 @@ export const products: Product[] = [
     tagline: "Можжевельник",
     category: "balm",
     subcategory: "joints",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Комплексная поддержка суставов и мягкое восстановление тканей.",
@@ -377,7 +377,7 @@ export const products: Product[] = [
     tagline: "Лаванда",
     category: "balm",
     subcategory: "body",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Успокаивает кожу после солнца и термических воздействий.",
@@ -413,7 +413,7 @@ export const products: Product[] = [
     tagline: "Лимонный эвкалипт",
     category: "balm",
     subcategory: "body",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Размягчает мозоли и натоптыши, возвращает стопам гладкость.",
@@ -444,7 +444,7 @@ export const products: Product[] = [
     tagline: "Лимон и мята",
     category: "balm",
     subcategory: "body",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Заживляет трещины и возвращает мягкость огрубевшей коже стоп.",
@@ -475,7 +475,7 @@ export const products: Product[] = [
     tagline: "Защитный воск",
     category: "balm",
     subcategory: "body",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Укрепляющий воск для ногтей и кутикулы.",
@@ -502,7 +502,7 @@ export const products: Product[] = [
     tagline: "Грушанка и шалфей",
     category: "balm",
     subcategory: "joints",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Снимает боль при нагрузках и хронических состояниях.",
@@ -530,7 +530,7 @@ export const products: Product[] = [
     tagline: "Цитронелла и гвоздика",
     category: "balm",
     subcategory: "repellent",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Натуральный репеллент на эфирных маслах, действует 2–3 часа.",
@@ -561,7 +561,7 @@ export const products: Product[] = [
     tagline: "Герань и валериана",
     category: "balm",
     subcategory: "other",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Мягкое расслабление и поддержка нервной системы перед сном.",
@@ -589,7 +589,7 @@ export const products: Product[] = [
     tagline: "Персик и ваниль",
     category: "balm",
     subcategory: "body",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Мягкий уход за кожей при беременности и деликатный бальзам для детей.",
@@ -622,7 +622,7 @@ export const products: Product[] = [
     tagline: "Мирт и тимьян",
     category: "balm",
     subcategory: "respiratory",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Облегчает дыхание при насморке и синуситах.",
@@ -653,7 +653,7 @@ export const products: Product[] = [
     tagline: "Солодка и д-пантенол",
     category: "balm",
     subcategory: "body",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Снимает зуд, шелушение и раздражение при аллергических реакциях.",
@@ -680,7 +680,7 @@ export const products: Product[] = [
     tagline: "Шелковица и жасмин",
     category: "balm",
     subcategory: "face",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Осветляет пигментные пятна и выравнивает тон кожи.",
@@ -707,7 +707,7 @@ export const products: Product[] = [
     tagline: "Anti-age уход",
     category: "balm",
     subcategory: "face",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Премиум-бальзам на настоящем масле крымской розы для зрелой кожи.",
@@ -735,7 +735,7 @@ export const products: Product[] = [
     tagline: "Грейпфрут и чёрный перец",
     category: "balm",
     subcategory: "body",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Лимфодренажное действие, работа с «апельсиновой коркой».",
@@ -767,7 +767,7 @@ export const products: Product[] = [
     tagline: "Олива и колеус",
     category: "balm",
     subcategory: "body",
-    price: 320,
+    price: 400,
     weight: "15 г",
     shortDescription:
       "Профилактика растяжек при беременности и колебаниях веса.",
