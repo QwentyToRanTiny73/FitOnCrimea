@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import {
@@ -11,8 +12,32 @@ import {
 
 type FilterValue = ProductSubcategory | "all";
 
-export default function CatalogPage() {
-  const [active, setActive] = useState<FilterValue>("all");
+const VALID_CATEGORIES: FilterValue[] = [
+  "all",
+  "face",
+  "body",
+  "hair",
+  "joints",
+  "respiratory",
+  "repellent",
+  "other",
+];
+
+function CatalogContent() {
+  const params = useSearchParams();
+  const initial = useMemo<FilterValue>(() => {
+    const raw = params.get("cat");
+    if (!raw) return "all";
+    return (VALID_CATEGORIES as string[]).includes(raw)
+      ? (raw as FilterValue)
+      : "all";
+  }, [params]);
+
+  const [active, setActive] = useState<FilterValue>(initial);
+
+  useEffect(() => {
+    setActive(initial);
+  }, [initial]);
 
   const counts = useMemo(() => {
     const result: Record<FilterValue, number> = {
@@ -68,5 +93,13 @@ export default function CatalogPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function CatalogPage() {
+  return (
+    <Suspense fallback={<div className="max-w-6xl mx-auto px-4 py-20" />}>
+      <CatalogContent />
+    </Suspense>
   );
 }

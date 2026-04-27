@@ -9,7 +9,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/catalog",
     "/massage-points",
     "/about",
+    "/faq",
     "/contacts",
+    "/favorites",
+    "/account/login",
+    "/account/register",
   ];
 
   const staticEntries: MetadataRoute.Sitemap = staticPaths.map((path) => ({
