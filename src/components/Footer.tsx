@@ -48,10 +48,34 @@ export function Footer() {
             </li>
             <li>
               <Link
+                href="/faq"
+                className="hover:text-brand-gold transition-colors"
+              >
+                Вопросы и ответы
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/contacts"
                 className="hover:text-brand-gold transition-colors"
               >
                 Контакты
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/favorites"
+                className="hover:text-brand-gold transition-colors"
+              >
+                Избранное
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/account/login"
+                className="hover:text-brand-gold transition-colors"
+              >
+                Личный кабинет
               </Link>
             </li>
           </ul>
