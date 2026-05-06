@@ -6,6 +6,10 @@
   --color-brand-green: #2e5e4e;
   --color-brand-gold: #c8a96e;
   --color-brand-beige: #f4f0ea;
+  --color-brand-sea: #5e8aa8;
+  --color-brand-poppy: #d04a3a;
+  --color-brand-lavender: #a89ac8;
+  --color-brand-terracotta: #c8946e;
 }
 
 html,
@@ -21,21 +25,16 @@ body {
 @layer utilities {
   .watercolor-texture {
     background-image:
-      radial-gradient(
-        circle at 15% 25%,
-        rgba(200, 169, 110, 0.18) 0,
-        transparent 45%
-      ),
-      radial-gradient(
-        circle at 85% 15%,
-        rgba(46, 94, 78, 0.16) 0,
-        transparent 50%
-      ),
-      radial-gradient(
-        circle at 70% 85%,
-        rgba(46, 94, 78, 0.1) 0,
-        transparent 55%
-      );
+      radial-gradient(circle at 12% 18%, rgba(200, 169, 110, 0.18) 0, transparent 45%),
+      radial-gradient(circle at 88% 12%, rgba(94, 138, 168, 0.14) 0, transparent 50%),
+      radial-gradient(circle at 80% 90%, rgba(208, 74, 58, 0.10) 0, transparent 55%),
+      radial-gradient(circle at 22% 92%, rgba(168, 154, 200, 0.12) 0, transparent 55%);
+  }
+
+  .vintage-frame {
+    background:
+      radial-gradient(ellipse at center, rgba(255, 255, 255, 0.6) 0, rgba(244, 240, 234, 0.85) 70%),
+      linear-gradient(135deg, rgba(200, 148, 110, 0.15), rgba(94, 138, 168, 0.12));
   }
 
   .animate-on-scroll {

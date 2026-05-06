@@ -2,11 +2,14 @@
 
 import { AuthProvider } from "@/lib/auth";
 import { FavoritesProvider } from "@/lib/favorites";
+import { ProductOverridesProvider } from "@/lib/products-overrides";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-      <FavoritesProvider>{children}</FavoritesProvider>
+      <ProductOverridesProvider>
+        <FavoritesProvider>{children}</FavoritesProvider>
+      </ProductOverridesProvider>
     </AuthProvider>
   );
 }

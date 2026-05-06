@@ -8,17 +8,37 @@ interface CategoryNode {
   key: IconKey;
   href: string;
   label: string;
+  /** Tailwind text color for the icon stroke / accent. */
+  color: string;
+  /** Tailwind ring/border accent on hover. */
+  ring: string;
+  /** Background tint behind the icon. */
+  bg: string;
   draw: React.ReactNode;
 }
 
 const Stroke = ({ children }: { children: React.ReactNode }) => (
-  <g stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round">
+  <g
+    stroke="currentColor"
+    strokeWidth="1.6"
+    fill="none"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     {children}
   </g>
 );
 
-const Fill = ({ children, opacity = 0.5 }: { children: React.ReactNode; opacity?: number }) => (
-  <g fill="currentColor" opacity={opacity}>{children}</g>
+const Fill = ({
+  children,
+  opacity = 0.55,
+}: {
+  children: React.ReactNode;
+  opacity?: number;
+}) => (
+  <g fill="currentColor" opacity={opacity}>
+    {children}
+  </g>
 );
 
 const ICONS: CategoryNode[] = [
@@ -26,6 +46,9 @@ const ICONS: CategoryNode[] = [
     key: "face",
     href: "/catalog?cat=face",
     label: "Для лица",
+    color: "text-brand-poppy",
+    ring: "group-hover:border-brand-poppy/60",
+    bg: "bg-brand-poppy/5",
     draw: (
       <>
         <Stroke>
@@ -34,9 +57,21 @@ const ICONS: CategoryNode[] = [
           <path d="M36 30 q1 -2 2 0" />
           <path d="M28 38 q4 3 8 0" />
         </Stroke>
-        <Fill opacity={0.55}>
-          <ellipse cx="20" cy="22" rx="6" ry="2.5" transform="rotate(-30 20 22)" />
-          <ellipse cx="44" cy="22" rx="6" ry="2.5" transform="rotate(30 44 22)" />
+        <Fill opacity={0.6}>
+          <ellipse
+            cx="20"
+            cy="22"
+            rx="6"
+            ry="2.5"
+            transform="rotate(-30 20 22)"
+          />
+          <ellipse
+            cx="44"
+            cy="22"
+            rx="6"
+            ry="2.5"
+            transform="rotate(30 44 22)"
+          />
           <ellipse cx="32" cy="14" rx="3" ry="6" />
         </Fill>
       </>
@@ -46,6 +81,9 @@ const ICONS: CategoryNode[] = [
     key: "body",
     href: "/catalog?cat=body",
     label: "Для тела",
+    color: "text-brand-forest",
+    ring: "group-hover:border-brand-forest/60",
+    bg: "bg-brand-forest/5",
     draw: (
       <>
         <Stroke>
@@ -54,7 +92,7 @@ const ICONS: CategoryNode[] = [
           <path d="M32 30 c 8 0 12 4 16 0" />
           <path d="M32 38 c -8 0 -12 4 -16 0" />
         </Stroke>
-        <Fill opacity={0.55}>
+        <Fill opacity={0.6}>
           <ellipse cx="14" cy="22" rx="5" ry="2" transform="rotate(-15 14 22)" />
           <ellipse cx="50" cy="30" rx="5" ry="2" transform="rotate(15 50 30)" />
           <ellipse cx="14" cy="38" rx="5" ry="2" transform="rotate(-15 14 38)" />
@@ -68,6 +106,9 @@ const ICONS: CategoryNode[] = [
     key: "hair",
     href: "/catalog?cat=hair",
     label: "Для волос",
+    color: "text-brand-terracotta",
+    ring: "group-hover:border-brand-terracotta/60",
+    bg: "bg-brand-terracotta/5",
     draw: (
       <>
         <Stroke>
@@ -78,7 +119,7 @@ const ICONS: CategoryNode[] = [
           <path d="M40 24 c 0 12 2 18 2 26" />
           <path d="M48 22 c 0 16 -4 24 -4 30" />
         </Stroke>
-        <Fill opacity={0.55}>
+        <Fill opacity={0.6}>
           <ellipse cx="32" cy="14" rx="14" ry="4" />
         </Fill>
       </>
@@ -88,6 +129,9 @@ const ICONS: CategoryNode[] = [
     key: "joints",
     href: "/catalog?cat=joints",
     label: "Суставы",
+    color: "text-brand-sea",
+    ring: "group-hover:border-brand-sea/60",
+    bg: "bg-brand-sea/5",
     draw: (
       <>
         <Stroke>
@@ -108,6 +152,9 @@ const ICONS: CategoryNode[] = [
     key: "respiratory",
     href: "/catalog?cat=respiratory",
     label: "Дыхание",
+    color: "text-brand-green",
+    ring: "group-hover:border-brand-green/60",
+    bg: "bg-brand-green/5",
     draw: (
       <>
         <Stroke>
@@ -117,7 +164,7 @@ const ICONS: CategoryNode[] = [
           <path d="M32 28 q -8 4 -10 14" />
           <path d="M32 28 q 8 4 10 14" />
         </Stroke>
-        <Fill opacity={0.5}>
+        <Fill opacity={0.55}>
           <ellipse cx="32" cy="12" rx="2" ry="3" />
           <circle cx="18" cy="34" r="1.5" />
           <circle cx="46" cy="34" r="1.5" />
@@ -129,6 +176,9 @@ const ICONS: CategoryNode[] = [
     key: "repellent",
     href: "/catalog?cat=repellent",
     label: "Репелленты",
+    color: "text-brand-gold",
+    ring: "group-hover:border-brand-gold/60",
+    bg: "bg-brand-gold/5",
     draw: (
       <>
         <Stroke>
@@ -140,7 +190,7 @@ const ICONS: CategoryNode[] = [
           <path d="M32 46 l -8 4" />
           <path d="M32 46 l 8 4" />
         </Stroke>
-        <Fill opacity={0.55}>
+        <Fill opacity={0.6}>
           <circle cx="32" cy="14" r="2.5" />
           <circle cx="20" cy="14" r="1.5" />
           <circle cx="44" cy="14" r="1.5" />
@@ -152,6 +202,9 @@ const ICONS: CategoryNode[] = [
     key: "soap",
     href: "/catalog?cat=other",
     label: "Прочее",
+    color: "text-brand-plum",
+    ring: "group-hover:border-brand-lavender/60",
+    bg: "bg-brand-lavender/5",
     draw: (
       <>
         <Stroke>
@@ -160,7 +213,7 @@ const ICONS: CategoryNode[] = [
           <path d="M34 28 q 4 -4 8 0" />
           <path d="M28 36 q 4 4 8 0" />
         </Stroke>
-        <Fill opacity={0.4}>
+        <Fill opacity={0.5}>
           <ellipse cx="22" cy="18" rx="3" ry="1.5" />
           <ellipse cx="34" cy="14" rx="3" ry="1.5" />
           <ellipse cx="44" cy="18" rx="3" ry="1.5" />
@@ -172,6 +225,9 @@ const ICONS: CategoryNode[] = [
     key: "massage",
     href: "/massage-points",
     label: "Точки массажа",
+    color: "text-brand-terracotta",
+    ring: "group-hover:border-brand-terracotta/60",
+    bg: "bg-brand-cream",
     draw: (
       <>
         <Stroke>
@@ -179,7 +235,7 @@ const ICONS: CategoryNode[] = [
           <path d="M32 12 v 40" />
           <path d="M12 32 h 40" />
         </Stroke>
-        <Fill opacity={0.7}>
+        <Fill opacity={0.75}>
           <circle cx="32" cy="20" r="2" />
           <circle cx="32" cy="44" r="2" />
           <circle cx="20" cy="32" r="2" />
@@ -202,7 +258,7 @@ export function CategoryGrid({ className }: CategoryGridProps) {
   return (
     <div
       className={cn(
-        "grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-8 gap-4 sm:gap-6",
+        "grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-5",
         className
       )}
     >
@@ -212,16 +268,19 @@ export function CategoryGrid({ className }: CategoryGridProps) {
           href={item.href}
           className="group flex flex-col items-center gap-2 text-center"
         >
-          <span className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white/70 border border-brand-green/15 flex items-center justify-center text-brand-green group-hover:bg-brand-gold/10 group-hover:border-brand-gold/60 transition-colors">
-            <svg
-              viewBox="0 0 64 64"
-              className="w-12 h-12"
-              aria-hidden="true"
-            >
+          <span
+            className={cn(
+              "relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border border-brand-green/15 flex items-center justify-center transition-colors",
+              item.bg,
+              item.ring,
+              item.color
+            )}
+          >
+            <svg viewBox="0 0 64 64" className="w-12 h-12" aria-hidden="true">
               {item.draw}
             </svg>
           </span>
-          <span className="text-sm text-brand-green/80 group-hover:text-brand-green leading-tight max-w-[6rem]">
+          <span className="text-xs sm:text-sm text-brand-green/85 group-hover:text-brand-green leading-tight max-w-[7rem]">
             {item.label}
           </span>
         </Link>

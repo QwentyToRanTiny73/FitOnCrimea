@@ -34,7 +34,7 @@ function UserIcon({ className }: { className?: string }) {
 
 export function Header() {
   const [open, setOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { count } = useFavorites();
 
   return (
@@ -58,6 +58,14 @@ export function Header() {
               {item.label}
             </Link>
           ))}
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="text-sm text-brand-poppy hover:text-brand-poppy/80 transition-colors"
+            >
+              Админка
+            </Link>
+          )}
         </nav>
 
         <div className="flex items-center gap-2">
@@ -126,6 +134,15 @@ export function Header() {
             >
               {user ? `Кабинет (${user.name})` : "Войти"}
             </Link>
+            {isAdmin && (
+              <Link
+                href="/admin"
+                onClick={() => setOpen(false)}
+                className="text-base text-brand-poppy hover:text-brand-poppy/80"
+              >
+                Админка
+              </Link>
+            )}
           </div>
         </nav>
       )}

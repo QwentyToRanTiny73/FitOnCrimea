@@ -5,6 +5,7 @@ import {
   BotanicalDivider,
   BotanicalWreath,
 } from "@/components/Botanical";
+import { withBasePath } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Точки массажа с крымским бальзамом",
@@ -62,7 +63,7 @@ export default function MassagePointsPage() {
       <div className="grid md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-10 items-start">
         <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white/60 border border-brand-green/10 shadow-sm">
           <Image
-            src="/massage-points.jpg"
+            src={withBasePath("/massage-points.jpg")}
             alt="Акупунктурные точки для массажа с крымским бальзамом — три грации"
             fill
             sizes="(max-width: 768px) 100vw, 500px"
