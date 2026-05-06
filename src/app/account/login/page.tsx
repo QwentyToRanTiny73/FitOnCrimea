@@ -1,16 +1,18 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import {
   BotanicalDivider,
   BotanicalWreath,
 } from "@/components/Botanical";
 
-export default function LoginPage() {
+function LoginInner() {
   const router = useRouter();
+  const params = useSearchParams();
+  const next = params.get("next") || "/account";
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +25,7 @@ export default function LoginPage() {
     setError(null);
     try {
       await login({ email, password });
-      router.push("/account");
+      router.push(next);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Ошибка входа.");
     } finally {
@@ -95,5 +97,13 @@ export default function LoginPage() {
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="max-w-md mx-auto px-4 py-20" />}>
+      <LoginInner />
+    </Suspense>
   );
 }

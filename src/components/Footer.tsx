@@ -78,6 +78,14 @@ export function Footer() {
                 Личный кабинет
               </Link>
             </li>
+            <li>
+              <Link
+                href="/privacy"
+                className="hover:text-brand-gold transition-colors"
+              >
+                Политика конфиденциальности
+              </Link>
+            </li>
           </ul>
         </div>
         <div>
