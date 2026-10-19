@@ -1,35 +1,27 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/auth";
-import {
-  products as baseProducts,
-  SUBCATEGORY_LABELS,
-  type ProductSubcategory,
-} from "@/data/products";
-import { useOverrides } from "@/lib/products-overrides";
-import { AdminProductForm } from "@/components/AdminProductForm";
-import {
-  BotanicalDivider,
-  BotanicalWreath,
-} from "@/components/Botanical";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { AdminProductForm } from "@/components/admin/AdminProductForm";
+import { Notice, inputClass, primaryButton, secondaryButton } from "@/components/ui/Form";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { SUBCATEGORIES, subcategoryMeta } from "@/config/categories";
+import { products as baseProducts, type ProductSubcategory } from "@/data/catalog";
+import { useAuth, useCatalog } from "@/providers";
+import type { OverrideMap } from "@/services/catalog-store";
 import { cn } from "@/lib/utils";
 
-type FilterValue = ProductSubcategory | "all" | "edited";
+type Filter = ProductSubcategory | "all" | "edited";
 
 export default function AdminPage() {
   const router = useRouter();
-  const { user, loading, isAdmin, promoteSelfToAdmin } = useAuth();
-  const { overrides, resetAll, exportJSON, importJSON } = useOverrides();
-
-  const [openSlug, setOpenSlug] = useState<string | null>(null);
-  const [filter, setFilter] = useState<FilterValue>("all");
-  const [search, setSearch] = useState("");
-  const [importText, setImportText] = useState("");
-  const [info, setInfo] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { user, loading, isAdmin } = useAuth();
+  const { overrides, replaceAll } = useCatalog();
+  const [open, setOpen] = useState<string | null>(null);
+  const [filter, setFilter] = useState<Filter>("all");
+  const [query, setQuery] = useState("");
+  const [status, setStatus] = useState<{ tone: "ok" | "error"; text: string } | null>(null);
 
   useEffect(() => {
     if (!loading && !user) router.replace("/account/login?next=/admin");
@@ -37,299 +29,168 @@ export default function AdminPage() {
 
   const editedCount = Object.keys(overrides).length;
 
-  const filtered = useMemo(() => {
+  const list = useMemo(() => {
+    const q = query.trim().toLowerCase();
     return baseProducts.filter((p) => {
       if (filter === "edited" && !overrides[p.slug]) return false;
-      if (filter !== "all" && filter !== "edited" && p.subcategory !== filter)
-        return false;
-      if (search) {
-        const q = search.toLowerCase();
-        if (
-          !p.name.toLowerCase().includes(q) &&
-          !p.tagline.toLowerCase().includes(q) &&
-          !p.slug.includes(q)
-        ) {
-          return false;
-        }
-      }
-      return true;
+      if (filter !== "all" && filter !== "edited" && p.subcategory !== filter) return false;
+      return !q || `${p.name} ${p.tagline} ${p.slug}`.toLowerCase().includes(q);
     });
-  }, [filter, overrides, search]);
+  }, [filter, query, overrides]);
 
-  if (loading || !user) {
-    return <div className="max-w-4xl mx-auto px-4 py-20" />;
-  }
+  if (loading || !user) return <div className="min-h-[50vh]" />;
 
   if (!isAdmin) {
     return (
-      <div className="max-w-xl mx-auto px-4 sm:px-6 py-16 text-center">
-        <BotanicalWreath className="mx-auto h-14 text-brand-gold mb-3" />
-        <h1 className="font-serif text-3xl text-brand-green">
-          Доступ ограничен
-        </h1>
-        <BotanicalDivider className="my-5" />
+      <div className="mx-auto max-w-lg px-4 py-14 text-center">
+        <SectionHeading as="h1" title="Доступ только для администратора" />
         <p className="text-brand-green/80">
-          Кабинет администратора доступен пользователю с ролью «admin».
+          Войдите под учётной записью администратора. Она задаётся при сборке сайта через секреты
+          репозитория (см. README).
         </p>
-        <p className="mt-4 text-sm text-brand-green/65">
-          В демо-режиме первый зарегистрированный пользователь получает
-          права администратора. Если в системе ещё нет администратора —
-          можно выполнить промоут себя.
-        </p>
-        <button
-          type="button"
-          onClick={() => {
-            try {
-              promoteSelfToAdmin();
-              setInfo("Вы повышены до администратора.");
-              setError(null);
-            } catch (err) {
-              setError(err instanceof Error ? err.message : "Ошибка.");
-            }
-          }}
-          className="mt-6 px-6 py-2 rounded-full border border-brand-green/30 text-brand-green hover:border-brand-gold"
-        >
-          Стать администратором
-        </button>
-        {info && (
-          <p className="mt-4 text-sm text-brand-forest">{info}</p>
-        )}
-        {error && <p className="mt-4 text-sm text-brand-poppy">{error}</p>}
       </div>
     );
   }
 
-  function copyExport() {
-    const json = exportJSON();
-    if (typeof navigator !== "undefined" && navigator.clipboard) {
-      navigator.clipboard
-        .writeText(json)
-        .then(() => setInfo("JSON скопирован в буфер обмена."))
-        .catch(() => setInfo(json));
-    } else {
-      setInfo(json);
-    }
+  function download() {
+    const blob = new Blob([JSON.stringify(overrides, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "overrides.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
   }
 
-  function applyImport() {
+  async function importFile(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
     try {
-      importJSON(importText);
-      setInfo("Импорт выполнен.");
-      setError(null);
-      setImportText("");
+      const parsed = JSON.parse(await file.text()) as OverrideMap;
+      if (typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("Ожидается объект JSON.");
+      replaceAll(parsed);
+      setStatus({ tone: "ok", text: `Импортировано правок: ${Object.keys(parsed).length}.` });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Ошибка импорта.");
-      setInfo(null);
+      setStatus({ tone: "error", text: err instanceof Error ? err.message : "Не удалось прочитать файл." });
     }
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
-      <header className="mb-8">
-        <p className="uppercase tracking-[0.25em] text-xs text-brand-gold mb-2">
-          Кабинет администратора
-        </p>
-        <h1 className="font-serif text-4xl text-brand-green">
-          Редактирование каталога
-        </h1>
-        <BotanicalDivider className="my-5" />
-        <p className="text-sm text-brand-green/75">
-          Изменения сохраняются в браузере (localStorage). На статическом
-          хостинге GitHub Pages нет серверного бэкенда — экспортируйте JSON и
-          применяйте его к <code>src/data/products.ts</code> для постоянного
-          сохранения.
-        </p>
-      </header>
+    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-14">
+      <SectionHeading
+        as="h1"
+        align="left"
+        eyebrow="Кабинет администратора"
+        title="Редактор каталога"
+        lead={
+          <p className="text-sm">
+            Правки сохраняются в этом браузере и сразу видны на сайте. Чтобы опубликовать их для
+            всех: «Скачать JSON» → заменить файл <code>src/data/catalog/overrides.json</code> в
+            репозитории → сайт пересоберётся.
+          </p>
+        }
+      />
 
-      <section className="mb-8 grid sm:grid-cols-3 gap-3">
-        <Stat label="Товаров в каталоге" value={baseProducts.length} />
-        <Stat label="С локальными правками" value={editedCount} accent="poppy" />
-        <Stat label="Ваша роль" value="admin" accent="forest" />
+      <section className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <Stat label="Товаров" value={baseProducts.length} />
+        <Stat label="С правками" value={editedCount} accent />
+        <Stat label="Вы вошли как" value={user.name} className="col-span-2 sm:col-span-1" />
       </section>
 
-      <section className="mb-6 bg-white/60 border border-brand-green/10 rounded-2xl p-4 flex flex-wrap items-center gap-3">
+      <section className="mb-6 flex flex-wrap gap-3 rounded-2xl border border-brand-green/10 bg-white/60 p-4">
+        <button type="button" onClick={download} disabled={!editedCount} className={cn(primaryButton, "py-2 text-sm")}>
+          Скачать JSON
+        </button>
+        <label className={cn(secondaryButton, "cursor-pointer py-2 text-sm")}>
+          <input type="file" accept="application/json" className="sr-only" onChange={importFile} />
+          Загрузить JSON
+        </label>
+        <button
+          type="button"
+          disabled={!editedCount}
+          onClick={() => {
+            if (window.confirm("Удалить все правки в этом браузере?")) {
+              replaceAll({});
+              setStatus({ tone: "ok", text: "Все правки удалены." });
+            }
+          }}
+          className={cn(secondaryButton, "py-2 text-sm text-brand-poppy")}
+        >
+          Очистить всё
+        </button>
+        {status && (
+          <div className="w-full">
+            <Notice tone={status.tone}>{status.text}</Notice>
+          </div>
+        )}
+      </section>
+
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row">
         <input
           type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
           placeholder="Поиск по названию или slug"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 min-w-[180px] px-3 py-2 rounded-lg border border-brand-green/20 bg-white text-sm focus:border-brand-gold focus:outline-none"
+          aria-label="Поиск товаров"
+          className={cn(inputClass, "flex-1")}
         />
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value as FilterValue)}
-          className="px-3 py-2 rounded-lg border border-brand-green/20 bg-white text-sm focus:border-brand-gold focus:outline-none"
-        >
-          <option value="all">Все категории</option>
+        <select value={filter} onChange={(e) => setFilter(e.target.value as Filter)} aria-label="Фильтр" className={cn(inputClass, "sm:w-56")}>
+          <option value="all">Все разделы</option>
           <option value="edited">Только изменённые</option>
-          {Object.entries(SUBCATEGORY_LABELS).map(([k, label]) => (
-            <option key={k} value={k}>
-              {label}
+          {SUBCATEGORIES.map((s) => (
+            <option key={s.key} value={s.key}>
+              {s.label}
             </option>
           ))}
         </select>
-        <span className="text-xs text-brand-green/65">
-          Показано: {filtered.length}
-        </span>
-      </section>
+      </div>
 
-      <ul className="space-y-3 mb-12">
-        {filtered.map((p) => {
-          const isOpen = openSlug === p.slug;
-          const isEdited = Boolean(overrides[p.slug]);
+      <ul className="space-y-3">
+        {list.map((p) => {
+          const isOpen = open === p.slug;
+          const meta = subcategoryMeta(p.subcategory);
           return (
-            <li
-              key={p.slug}
-              className="bg-white/60 border border-brand-green/10 rounded-2xl overflow-hidden"
-            >
+            <li key={p.slug} className="overflow-hidden rounded-2xl border border-brand-green/10 bg-white/70">
               <button
                 type="button"
-                onClick={() => setOpenSlug(isOpen ? null : p.slug)}
-                className="w-full flex items-center justify-between gap-3 px-4 sm:px-5 py-3 text-left hover:bg-brand-cream/50 transition-colors"
+                onClick={() => setOpen(isOpen ? null : p.slug)}
                 aria-expanded={isOpen}
+                className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-brand-cream/60"
               >
-                <span className="flex items-center gap-3 min-w-0">
-                  <span
-                    className={cn(
-                      "inline-block w-2 h-2 rounded-full shrink-0",
-                      isEdited ? "bg-brand-poppy" : "bg-brand-green/30"
-                    )}
-                  />
-                  <span className="min-w-0">
-                    <span className="block font-serif text-lg text-brand-green truncate">
-                      {p.name}
-                    </span>
-                    <span className="block text-xs text-brand-green/60 truncate">
-                      {p.tagline} · {SUBCATEGORY_LABELS[p.subcategory]}
-                    </span>
+                <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", overrides[p.slug] ? "bg-brand-poppy" : meta.dot)} />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-serif text-lg text-brand-green">{overrides[p.slug]?.name ?? p.name}</span>
+                  <span className="block truncate text-xs text-brand-green/60">
+                    {meta.label} · {p.slug}
+                    {overrides[p.slug] && " · изменён"}
                   </span>
                 </span>
-                <span className="text-brand-gold text-2xl leading-none transition-transform" style={{ transform: isOpen ? "rotate(45deg)" : "none" }}>
+                <span aria-hidden="true" className={cn("text-2xl text-brand-gold transition-transform", isOpen && "rotate-45")}>
                   +
                 </span>
               </button>
-
               {isOpen && (
-                <div className="border-t border-brand-green/10 p-4 sm:p-5 bg-brand-cream/40">
-                  <AdminProductForm base={p} onClose={() => setOpenSlug(null)} />
-                  <div className="mt-3 text-xs">
-                    <Link
-                      href={`/catalog/${p.slug}`}
-                      target="_blank"
-                      className="text-brand-green border-b border-brand-gold pb-0.5 hover:text-brand-gold"
-                    >
-                      Открыть страницу товара ↗
-                    </Link>
-                  </div>
+                <div className="border-t border-brand-green/10 bg-brand-cream/40 p-4 sm:p-6">
+                  <AdminProductForm base={p} />
+                  <Link href={`/catalog/${p.slug}`} target="_blank" className="mt-4 inline-block text-sm text-brand-green underline decoration-brand-gold underline-offset-4">
+                    Открыть страницу товара ↗
+                  </Link>
                 </div>
               )}
             </li>
           );
         })}
-        {filtered.length === 0 && (
-          <li className="text-center py-12 text-brand-green/60">
-            Ничего не найдено.
-          </li>
-        )}
+        {list.length === 0 && <li className="py-10 text-center text-brand-green/60">Ничего не найдено.</li>}
       </ul>
-
-      <section className="bg-white/60 border border-brand-green/10 rounded-2xl p-5 sm:p-6">
-        <h2 className="font-serif text-2xl text-brand-green">
-          Импорт / экспорт
-        </h2>
-        <BotanicalDivider className="my-4" />
-        <p className="text-sm text-brand-green/75">
-          Экспортируйте все правки одной строкой JSON, чтобы перенести их в
-          репозиторий, либо импортируйте раннее сохранённый набор.
-        </p>
-
-        <div className="mt-5 flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={copyExport}
-            className="px-5 py-2 rounded-full bg-brand-green text-brand-beige hover:bg-brand-green/90"
-          >
-            Скопировать JSON
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              if (
-                typeof window !== "undefined" &&
-                window.confirm(
-                  "Удалить все локальные правки? Действие необратимо."
-                )
-              ) {
-                resetAll();
-                setInfo("Все правки удалены.");
-              }
-            }}
-            disabled={editedCount === 0}
-            className="px-5 py-2 rounded-full border border-brand-poppy/40 text-brand-poppy hover:bg-brand-poppy/5 disabled:opacity-40"
-          >
-            Очистить всё
-          </button>
-        </div>
-
-        <details className="mt-5">
-          <summary className="cursor-pointer text-sm text-brand-green/80">
-            Импорт JSON
-          </summary>
-          <div className="mt-3 space-y-3">
-            <textarea
-              value={importText}
-              onChange={(e) => setImportText(e.target.value)}
-              rows={6}
-              placeholder='{"krymskiy-spasatel": {"price": 450, ...}}'
-              className="w-full px-3 py-2 rounded-lg border border-brand-green/20 bg-white text-xs font-mono focus:border-brand-gold focus:outline-none"
-            />
-            <button
-              type="button"
-              onClick={applyImport}
-              disabled={!importText.trim()}
-              className="px-5 py-2 rounded-full border border-brand-green/30 text-brand-green hover:border-brand-gold disabled:opacity-50"
-            >
-              Применить импорт
-            </button>
-          </div>
-        </details>
-
-        {info && (
-          <p className="mt-4 text-sm text-brand-forest bg-brand-forest/5 border border-brand-forest/20 rounded-lg px-3 py-2">
-            {info}
-          </p>
-        )}
-        {error && (
-          <p className="mt-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-            {error}
-          </p>
-        )}
-      </section>
     </div>
   );
 }
 
-function Stat({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: string | number;
-  accent?: "poppy" | "forest";
-}) {
-  const accentClass =
-    accent === "poppy"
-      ? "text-brand-poppy"
-      : accent === "forest"
-        ? "text-brand-forest"
-        : "text-brand-green";
+function Stat({ label, value, accent, className }: { label: string; value: string | number; accent?: boolean; className?: string }) {
   return (
-    <div className="bg-white/70 border border-brand-green/10 rounded-2xl px-4 py-3">
-      <p className="text-xs uppercase tracking-widest text-brand-gold mb-1">
-        {label}
-      </p>
-      <p className={cn("font-serif text-2xl", accentClass)}>{value}</p>
+    <div className={cn("rounded-2xl border border-brand-green/10 bg-white/70 px-4 py-3", className)}>
+      <p className="text-[11px] uppercase tracking-widest text-brand-gold">{label}</p>
+      <p className={cn("truncate font-serif text-2xl", accent ? "text-brand-poppy" : "text-brand-green")}>{value}</p>
     </div>
   );
 }

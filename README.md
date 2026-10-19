@@ -1,150 +1,107 @@
 # Фитон Крым — сайт-витрина
 
-Магазин натуральной крымской косметики (Ялта, с 2009 года). Каталог
-бальзамов и мыла ручной работы, переход на Ozon для покупки, точки
-акупунктурного массажа, личный кабинет, избранное и кабинет администратора.
+Магазин натуральной крымской косметики. Каталог бальзамов с поиском и
+фильтрами, схема точек массажа, избранное, личный кабинет и редактор
+каталога для администратора. Покупка — на Ozon.
+
+Демо: <https://qwentytorantiny73.github.io/FitOnCrimea/>
 
 ## Стек
 
-- Next.js 14 (App Router, статический экспорт)
-- TypeScript
-- Tailwind CSS
-- next/image, next/font (Cormorant Garamond + Inter)
-- Размещение: GitHub Pages (или Vercel)
+Next.js 14 (App Router, статический экспорт) · TypeScript · Tailwind CSS ·
+хостинг GitHub Pages. Сервера нет: сайт собирается в набор HTML-файлов.
 
-## Локальная разработка
-
-Требуется Node.js 18.17+ (рекомендуется 20 или 22).
+## Команды
 
 ```bash
 npm install
-npm run dev          # http://localhost:3000
-npm run build        # production-сборка в out/
-npm run start        # запуск собранного сервера
-npm run lint
-npm run typecheck
+npm run dev        # разработка: http://localhost:3000
+npm run check      # lint + типы + сборка + проверка out/ — запускать перед пушем
+npm run hash-password -- "пароль"   # хэш для seed-админа
 ```
 
 ## Структура
 
 ```
 src/
-  app/
-    page.tsx               главная: иконки категорий, хиты, подборки, CTA
-    catalog/               каталог + страницы товаров (SSG)
-    massage-points/        схема 26 акупунктурных точек
-    favorites/             избранное (localStorage)
-    account/               вход, регистрация, кабинет
-    admin/                 кабинет администратора (только для роли admin)
-    about, faq, contacts/  статические страницы
-    privacy/               политика конфиденциальности (152-ФЗ)
-    sitemap.ts, robots.ts  SEO
+  app/                  страницы (каждая папка — адрес на сайте)
   components/
-    Header, Footer, ProductCard, CategoryGrid,
-    Botanical              SVG-орнаменты (ветвь, венок, разделитель)
-    AdminProductForm       форма редактирования карточки + загрузка фото
-    ProductDetailView      просмотр карточки с применением overrides
-  data/products.ts         базовый каталог из 24 бальзамов
-  lib/
-    auth.tsx               AuthProvider (демо на localStorage + SHA-256)
-    favorites.tsx          FavoritesProvider
-    products-overrides.tsx ProductOverridesProvider — правки админа
-    image-upload.ts        ресайз и сжатие фото в data URL
-    utils.ts               cn, formatPrice, SITE_URL, withBasePath
-public/
-  massage-points.jpg       иллюстрация точек массажа
-  .nojekyll                отключает Jekyll на GitHub Pages
-scripts/
-  hash-password.mjs        утилита для seed-админа
+    layout/             шапка, подвал, нижнее меню для телефонов
+    catalog/            карточка, страница товара, каталог с фильтрами, иконки категорий
+    admin/              форма редактирования товара
+    ui/                 общие элементы: заголовки, аккордеон, формы, орнаменты
+  config/
+    site.ts             название, контакты, меню, ссылка на магазин Ozon
+    categories.ts       категории: подписи, порядок, цвета
+  data/catalog/
+    types.ts            описание полей товара
+    balms.ts            бальзамы
+    overrides.json      опубликованные правки из админки
+    index.ts            сборка каталога и функции выборки
+  providers/            состояние: пользователь, избранное, правки каталога
+  services/             подключаемые сервисы (см. ниже)
+scripts/                хэш пароля, проверка сборки
+public/                 картинки (massage-points.jpg, logo.svg, products/…)
 ```
 
-## Кабинет администратора
+## Как добавить или изменить товар
 
-`/admin` доступен только пользователю с ролью `admin`. В демо-режиме первый
-зарегистрированный пользователь автоматически получает роль admin. Также
-можно «зерном» завести аккаунт через переменные окружения сборки —
-см. ниже.
+**Через админку** (без программирования):
+1. Войти под администратором → `/admin`.
+2. Открыть товар, изменить поля, загрузить фото → «Сохранить». В этом браузере
+   изменения видны сразу.
+3. Чтобы увидели все: «Скачать JSON» → заменить им `src/data/catalog/overrides.json`
+   в репозитории (на GitHub: файл → карандаш → вставить → Commit). Сайт пересоберётся.
 
-В админке:
+**В коде:**
+- Новый бальзам — скопировать блок в `src/data/catalog/balms.ts`, задать уникальные
+  `id` и `slug` (латиница, через дефис).
+- Фото — `public/products/<slug>.webp` (1000×1000, до 200 КБ), в товаре:
+  `images: ["/products/<slug>.webp"]`. Префикс для GitHub Pages добавится сам.
+- Ссылка на Ozon — поле `ozonUrl`. Пока его нет, кнопка показывает «Скоро на Ozon».
+- Метка «Хит»/«Новинка» — `badges: ["hit"]`.
+- Ручная подборка «Сочетается с» — `pairsWith: ["slug-1", "slug-2"]`.
+- Мыло и бальзамы для губ — создать `soap.ts` / `lip-balms.ts` по образцу `balms.ts`,
+  подключить в `data/catalog/index.ts`, в `config/categories.ts` поставить `available: true`.
 
-- Поиск и фильтр по категории / по изменённым.
-- Inline-редактор карточки: название, подзаголовок, цена, описание,
-  состав, применение, противопоказания, ссылка на Ozon, изображения.
-- Загрузка фото: файлы сжимаются в браузере (max 1000 px,
-  JPEG q=0.82) и сохраняются как data URL в localStorage.
-- Сброс одной карточки или всех правок.
-- Импорт / экспорт правок одним JSON-объектом.
+## Подключаемые сервисы
 
-**Важно про хранение.** Изменения админа живут в `localStorage` браузера.
-Это удобно для черновика и предпросмотра, но не подходит для постоянного
-каталога: правки видны только на устройстве админа. Для долгосрочного
-хранения скопируйте JSON через «Экспорт» и примените к
-`src/data/products.ts`, либо подключите серверный CMS (Decap CMS, Tina,
-Strapi, Supabase).
+Все внешние зависимости собраны в `src/services/index.ts`. Каждый сервис описан
+интерфейсом, сейчас подключены демо-реализации на `localStorage`:
 
-## Seed-админ через переменные окружения
+| Сервис | Сейчас | Чем заменить |
+|---|---|---|
+| `auth` — вход, регистрация | данные в браузере посетителя | Supabase Auth, Яндекс ID, Auth.js |
+| `catalogStore` — правки админки | браузер администратора | Supabase / Decap CMS / headless CMS |
+| `favoritesStore` — избранное | браузер (годится и для продакшена) | синхронизация с аккаунтом |
 
-Чтобы пред-создать админа на любом устройстве при первом открытии сайта,
-без хранения пароля в репозитории:
+Замена = новая реализация того же интерфейса + одна строка в `services/index.ts`.
+Страницы и компоненты при этом не меняются.
 
-```bash
-# 1) Получите хэш своего пароля локально:
-node scripts/hash-password.mjs "ваш-пароль"
-# выведет 64-символьный hex SHA-256
+## Деплой (GitHub Pages)
 
-# 2) Добавьте в Settings → Secrets and variables → Actions:
-#    Secrets:
-#      ADMIN_EMAIL=admin@phyton-crimea.ru
-#      ADMIN_PASSWORD_HASH=<хэш из шага 1>
-#    Variables:
-#      ADMIN_NAME=admin (необязательно)
-#      SITE_URL=https://qwentytorantiny73.github.io/FitOnCrimea
+Workflow `.github/workflows/nextjs.yml` срабатывает при пуше в `main`: проверяет код,
+собирает сайт, проверяет результат (`scripts/verify-export.mjs`) и публикует `out/`.
 
-# 3) Запустите workflow «Deploy to GitHub Pages» (push в main или вручную).
-```
+Настройка репозитория (один раз):
+- **Settings → Pages → Source: GitHub Actions.**
+- **Settings → Secrets and variables → Actions:**
+  - Variables: `ADMIN_LOGIN` = логин администратора (например `Crimea55`);
+  - Secrets: `ADMIN_PASSWORD_HASH` = результат `npm run hash-password -- "пароль"`;
+    `ADMIN_EMAIL` — необязательно, второй вариант входа.
 
-Пароль в виде plain-text **никогда** не попадёт в репозиторий: в исходниках
-живёт только хэш. Это всё ещё демо-уровень безопасности (хэш виден в
-JS-бандле и поддаётся подбору при слабом пароле), но строго лучше, чем
-литеральный пароль в коде.
+Пароль в репозиторий не попадает — только хэш. Это демо-уровень защиты: хэш
+виден в коде страницы, поэтому пароль должен быть длинным и нигде больше
+не использоваться.
 
-## Деплой на GitHub Pages
+Свой домен: Settings → Pages → Custom domain → `phyton-crimea.ru`, у регистратора
+CNAME на `qwentytorantiny73.github.io`. Префикс `/FitOnCrimea` уберётся автоматически.
 
-1. Settings → Pages → Source = **GitHub Actions**.
-2. Запушьте в `main`. Workflow `.github/workflows/deploy.yml`:
-   - устанавливает зависимости, собирает `next build` с
-     `output: "export"` и `basePath: /FitOnCrimea`,
-   - публикует `out/` через `actions/deploy-pages@v4`.
-3. (Опционально) Привязка собственного домена `phyton-crimea.ru`:
-   Settings → Pages → Custom domain. Затем у регистратора (RU-CENTER):
-   создать `CNAME` → `qwentytorantiny73.github.io` или `A`-записи на
-   IP-адреса GitHub Pages. После проверки домена убрать `basePath`
-   из next.config.mjs (домен корневой).
+## Перед публичным запуском
 
-## Деплой на Vercel
-
-В качестве альтернативы:
-
-1. Импортировать репозиторий в Vercel.
-2. Удалить или закомментировать `output: "export"` и `basePath` в
-   `next.config.mjs` — Vercel сам деплоит динамическую сборку.
-
-## SEO
-
-- `src/app/sitemap.ts` → `/sitemap.xml`
-- `src/app/robots.ts` → `/robots.txt`
-- Open Graph и уникальные `title`/`description` на каждой странице
-- Schema.org: `Organization`, `Product` + `BreadcrumbList`, `FAQPage`
-
-## Что сделать дальше
-
-- Заменить плейсхолдеры реальными фото товаров. Через админку (быстро,
-  локально) или вручную в `src/data/products.ts` (постоянно). Формат —
-  WebP/JPEG, 1000×1000, ≤200 КБ.
-- Проставить реальные `ozonUrl`.
-- Подключить серверную аутентификацию (Supabase / Auth.js / Yandex ID)
-  и удалить демо-провайдер из `src/lib/auth.tsx`.
-- Добавить страницы для мыла (30 сортов) и бальзамов для губ.
-- Подключить email-рассылку (Unisender, Sendsay) для подписки в подвале.
-- Заменить локальное хранилище правок на CMS (Decap CMS работает с
-  GitHub-репозиторием через OAuth и не требует своего сервера).
+- Проверить у производителя поля «Способ применения» и «Противопоказания» — это
+  черновые тексты, в брошюре их нет (см. комментарий в `balms.ts`).
+- Политику конфиденциальности (`/privacy`) должен посмотреть юрист; указать оператора
+  персональных данных.
+- Заменить демо-авторизацию на серверную, если регистрация нужна по-настоящему.
+- Добавить фото товаров и ссылки на Ozon; ссылку на магазин — `site.marketplace.storeUrl`.

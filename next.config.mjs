@@ -1,22 +1,16 @@
-const isProd = process.env.NODE_ENV === "production";
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? (isProd ? "/FitOnCrimea" : "");
+// Сайт собирается в статические файлы (out/) для GitHub Pages.
+// Префикс путей приходит из переменной окружения: workflow берёт его
+// из настроек Pages ("/FitOnCrimea" на github.io, "" на своём домене).
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "export",
   trailingSlash: true,
   basePath,
-  assetPrefix: basePath || undefined,
-  images: {
-    unoptimized: true,
-    remotePatterns: [
-      { protocol: "https", hostname: "images.unsplash.com" },
-      { protocol: "https", hostname: "source.unsplash.com" },
-    ],
-  },
-  env: {
-    NEXT_PUBLIC_BASE_PATH: basePath,
-  },
+  images: { unoptimized: true },
+  env: { NEXT_PUBLIC_BASE_PATH: basePath },
+  poweredByHeader: false,
 };
 
 export default nextConfig;

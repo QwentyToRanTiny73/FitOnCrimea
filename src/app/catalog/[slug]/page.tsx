@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import Link from "next/link";
-import {
-  products,
-  getProductBySlug,
-  SUBCATEGORY_LABELS,
-} from "@/data/products";
-import { SITE_URL } from "@/lib/utils";
-import { ProductDetailView } from "@/components/ProductDetailView";
+import { notFound } from "next/navigation";
+import { ProductCard } from "@/components/catalog/ProductCard";
+import { ProductDetail } from "@/components/catalog/ProductDetail";
+import { JsonLd } from "@/components/ui/JsonLd";
+import { subcategoryMeta } from "@/config/categories";
+import { site } from "@/config/site";
+import { getProductBySlug, getRelated, hasOzonLink, products } from "@/data/catalog";
+import { absoluteUrl } from "@/lib/utils";
 
 interface PageProps {
   params: { slug: string };
 }
+
+export const dynamicParams = false;
 
 export function generateStaticParams() {
   return products.map((p) => ({ slug: p.slug }));
@@ -20,15 +22,12 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: PageProps): Metadata {
   const product = getProductBySlug(params.slug);
   if (!product) return { title: "Товар не найден" };
+  const title = `${product.name} — ${product.tagline}`;
   return {
-    title: `${product.name} — ${product.tagline}`,
+    title,
     description: product.shortDescription,
-    alternates: { canonical: `${SITE_URL}/catalog/${product.slug}` },
-    openGraph: {
-      title: `${product.name} — Фитон Крым`,
-      description: product.shortDescription,
-      type: "website",
-    },
+    alternates: { canonical: absoluteUrl(`/catalog/${product.slug}/`) },
+    openGraph: { title: `${title} | ${site.name}`, description: product.shortDescription },
   };
 }
 
@@ -36,73 +35,75 @@ export default function ProductPage({ params }: PageProps) {
   const product = getProductBySlug(params.slug);
   if (!product) notFound();
 
-  const productSchema = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: `${product.name} — ${product.tagline}`,
-    description: product.shortDescription,
-    brand: { "@type": "Brand", name: "Фитон Крым" },
-    category: SUBCATEGORY_LABELS[product.subcategory],
-    offers: {
-      "@type": "Offer",
-      priceCurrency: "RUB",
-      price: product.price,
-      availability: "https://schema.org/InStock",
-      url: `${SITE_URL}/catalog/${product.slug}`,
-    },
-  };
-
-  const breadcrumbsSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Главная",
-        item: SITE_URL,
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Каталог",
-        item: `${SITE_URL}/catalog`,
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: product.name,
-        item: `${SITE_URL}/catalog/${product.slug}`,
-      },
-    ],
-  };
+  const url = absoluteUrl(`/catalog/${product.slug}/`);
+  const meta = subcategoryMeta(product.subcategory);
+  const related = getRelated(product);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-12">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: `${product.name} — ${product.tagline}`,
+          description: product.shortDescription,
+          brand: { "@type": "Brand", name: site.name },
+          category: meta.label,
+          ...(product.images[0] && { image: absoluteUrl(product.images[0]) }),
+          offers: {
+            "@type": "Offer",
+            priceCurrency: "RUB",
+            price: product.price,
+            url: hasOzonLink(product) ? product.ozonUrl : url,
+          },
+        }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(breadcrumbsSchema),
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Главная", item: absoluteUrl("/") },
+            { "@type": "ListItem", position: 2, name: "Каталог", item: absoluteUrl("/catalog/") },
+            { "@type": "ListItem", position: 3, name: product.name, item: url },
+          ],
         }}
       />
 
-      <nav className="text-sm text-brand-green/60 mb-8 flex flex-wrap items-center gap-2">
-        <Link href="/" className="hover:text-brand-green">
-          Главная
-        </Link>
-        <span>/</span>
-        <Link href="/catalog" className="hover:text-brand-green">
-          Каталог
-        </Link>
-        <span>/</span>
-        <span className="text-brand-green">{product.name}</span>
+      <nav aria-label="Хлебные крошки" className="mb-6 text-sm text-brand-green/60">
+        <ol className="flex flex-wrap items-center gap-1.5">
+          <li>
+            <Link href="/" className="hover:text-brand-green">Главная</Link>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <Link href="/catalog" className="hover:text-brand-green">Каталог</Link>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <Link href={`/catalog?cat=${product.subcategory}`} className="hover:text-brand-green">
+              {meta.label}
+            </Link>
+          </li>
+        </ol>
       </nav>
 
-      <ProductDetailView base={product} />
+      <ProductDetail base={product} />
+
+      {related.length > 0 && (
+        <section className="mt-16" aria-labelledby="related">
+          <h2 id="related" className="mb-6 font-serif text-2xl text-brand-green sm:text-3xl">
+            Ещё в разделе «{meta.label}»
+          </h2>
+          <ul className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
+            {related.map((p) => (
+              <li key={p.slug}>
+                <ProductCard product={p} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }
