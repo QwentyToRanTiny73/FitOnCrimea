@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
-import {
-  products,
-  getProductBySlug,
-  SUBCATEGORY_LABELS,
-} from "@/data/products";
-import { formatPrice, SITE_URL } from "@/lib/utils";
+import { notFound } from "next/navigation";
+import { ProductCard } from "@/components/catalog/ProductCard";
+import { ProductDetail } from "@/components/catalog/ProductDetail";
+import { JsonLd } from "@/components/ui/JsonLd";
+import { subcategoryMeta } from "@/config/categories";
+import { site } from "@/config/site";
+import { getProductBySlug, getRelated, hasOzonLink, products } from "@/data/catalog";
+import { absoluteUrl } from "@/lib/utils";
 
 interface PageProps {
   params: { slug: string };
 }
+
+export const dynamicParams = false;
 
 export function generateStaticParams() {
   return products.map((p) => ({ slug: p.slug }));
@@ -20,15 +22,12 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: PageProps): Metadata {
   const product = getProductBySlug(params.slug);
   if (!product) return { title: "Товар не найден" };
+  const title = `${product.name} — ${product.tagline}`;
   return {
-    title: `${product.name} — ${product.tagline}`,
+    title,
     description: product.shortDescription,
-    alternates: { canonical: `${SITE_URL}/catalog/${product.slug}` },
-    openGraph: {
-      title: `${product.name} — Фитон Крым`,
-      description: product.shortDescription,
-      type: "website",
-    },
+    alternates: { canonical: absoluteUrl(`/catalog/${product.slug}/`) },
+    openGraph: { title: `${title} | ${site.name}`, description: product.shortDescription },
   };
 }
 
@@ -36,173 +35,75 @@ export default function ProductPage({ params }: PageProps) {
   const product = getProductBySlug(params.slug);
   if (!product) notFound();
 
-  const image =
-    product.images[0] ??
-    `https://source.unsplash.com/featured/900x900/?crimea-nature-herbs,${encodeURIComponent(
-      product.tagline
-    )}`;
-
-  const productSchema = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: `${product.name} — ${product.tagline}`,
-    description: product.shortDescription,
-    brand: { "@type": "Brand", name: "Фитон Крым" },
-    category: SUBCATEGORY_LABELS[product.subcategory],
-    offers: {
-      "@type": "Offer",
-      priceCurrency: "RUB",
-      price: product.price,
-      availability: "https://schema.org/InStock",
-      url: `${SITE_URL}/catalog/${product.slug}`,
-    },
-  };
-
-  const breadcrumbsSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Главная",
-        item: SITE_URL,
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Каталог",
-        item: `${SITE_URL}/catalog`,
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: product.name,
-        item: `${SITE_URL}/catalog/${product.slug}`,
-      },
-    ],
-  };
+  const url = absoluteUrl(`/catalog/${product.slug}/`);
+  const meta = subcategoryMeta(product.subcategory);
+  const related = getRelated(product);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-12">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: `${product.name} — ${product.tagline}`,
+          description: product.shortDescription,
+          brand: { "@type": "Brand", name: site.name },
+          category: meta.label,
+          ...(product.images[0] && { image: absoluteUrl(product.images[0]) }),
+          offers: {
+            "@type": "Offer",
+            priceCurrency: "RUB",
+            price: product.price,
+            url: hasOzonLink(product) ? product.ozonUrl : url,
+          },
+        }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(breadcrumbsSchema),
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Главная", item: absoluteUrl("/") },
+            { "@type": "ListItem", position: 2, name: "Каталог", item: absoluteUrl("/catalog/") },
+            { "@type": "ListItem", position: 3, name: product.name, item: url },
+          ],
         }}
       />
 
-      <nav className="text-sm text-brand-green/60 mb-8">
-        <Link href="/" className="hover:text-brand-green">
-          Главная
-        </Link>
-        <span className="mx-2">/</span>
-        <Link href="/catalog" className="hover:text-brand-green">
-          Каталог
-        </Link>
-        <span className="mx-2">/</span>
-        <span className="text-brand-green">{product.name}</span>
+      <nav aria-label="Хлебные крошки" className="mb-6 text-sm text-brand-green/60">
+        <ol className="flex flex-wrap items-center gap-1.5">
+          <li>
+            <Link href="/" className="hover:text-brand-green">Главная</Link>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <Link href="/catalog" className="hover:text-brand-green">Каталог</Link>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <Link href={`/catalog?cat=${product.subcategory}`} className="hover:text-brand-green">
+              {meta.label}
+            </Link>
+          </li>
+        </ol>
       </nav>
 
-      <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
-        <div className="relative aspect-square rounded-2xl overflow-hidden bg-white/70 border border-brand-green/10">
-          <Image
-            src={image}
-            alt={`${product.name} — ${product.tagline}`}
-            fill
-            priority
-            sizes="(max-width: 1024px) 100vw, 500px"
-            className="object-cover"
-          />
-        </div>
+      <ProductDetail base={product} />
 
-        <div>
-          <p className="uppercase tracking-widest text-xs text-brand-gold mb-2">
-            {SUBCATEGORY_LABELS[product.subcategory]}
-          </p>
-          <h1 className="font-serif text-4xl sm:text-5xl text-brand-green leading-tight">
-            {product.name}
-          </h1>
-          <p className="mt-2 text-xl text-brand-green/70 italic">
-            {product.tagline}
-          </p>
-
-          <div className="mt-6 flex items-baseline gap-4">
-            <span className="font-serif text-3xl text-brand-green">
-              {formatPrice(product.price)}
-            </span>
-            <span className="text-sm text-brand-green/60">
-              {product.weight}
-            </span>
-          </div>
-
-          <p className="mt-6 text-brand-green/80 leading-relaxed">
-            {product.shortDescription}
-          </p>
-
-          <a
-            href={product.ozonUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-8 inline-flex items-center justify-center w-full sm:w-auto px-10 py-4 rounded-full bg-brand-green text-brand-beige hover:bg-brand-green/90 transition-colors"
-          >
-            Купить на Ozon
-          </a>
-          {product.ozonUrl === "#" && (
-            <p className="mt-3 text-xs text-brand-green/60">
-              Карточка на Ozon скоро будет опубликована.
-            </p>
-          )}
-
-          <dl className="mt-10 space-y-6">
-            <div>
-              <dt className="uppercase tracking-widest text-xs text-brand-gold mb-2">
-                Действие
-              </dt>
-              <dd className="text-brand-green/80 leading-relaxed">
-                {product.effect}
-              </dd>
-            </div>
-            <div>
-              <dt className="uppercase tracking-widest text-xs text-brand-gold mb-2">
-                Состав
-              </dt>
-              <dd>
-                <ul className="flex flex-wrap gap-2">
-                  {product.composition.map((item) => (
-                    <li
-                      key={item}
-                      className="text-sm px-3 py-1 rounded-full bg-white/60 border border-brand-green/10 text-brand-green/80"
-                    >
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </dd>
-            </div>
-            <div>
-              <dt className="uppercase tracking-widest text-xs text-brand-gold mb-2">
-                Применение
-              </dt>
-              <dd className="text-brand-green/80 leading-relaxed">
-                {product.application}
-              </dd>
-            </div>
-            <div>
-              <dt className="uppercase tracking-widest text-xs text-brand-gold mb-2">
-                Противопоказания
-              </dt>
-              <dd className="text-brand-green/80 leading-relaxed">
-                {product.contraindications}
-              </dd>
-            </div>
-          </dl>
-        </div>
-      </div>
+      {related.length > 0 && (
+        <section className="mt-16" aria-labelledby="related">
+          <h2 id="related" className="mb-6 font-serif text-2xl text-brand-green sm:text-3xl">
+            Ещё в разделе «{meta.label}»
+          </h2>
+          <ul className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
+            {related.map((p) => (
+              <li key={p.slug}>
+                <ProductCard product={p} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }

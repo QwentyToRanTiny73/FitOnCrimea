@@ -5,9 +5,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "npx --yes serve@14.2.4 out",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "verify": "node scripts/verify-export.mjs",
+    "check": "npm run lint && npm run typecheck && npm run build && npm run verify",
+    "hash-password": "node scripts/hash-password.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",
