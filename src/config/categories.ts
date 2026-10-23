@@ -18,6 +18,8 @@ export interface SubcategoryMeta {
   /** Рамка при наведении. */
   ring: string;
   dot: string;
+  /** Цвет кольца этикетки на баночке-плейсхолдере. */
+  jar: string;
 }
 
 export const SUBCATEGORIES: SubcategoryMeta[] = [
@@ -30,6 +32,7 @@ export const SUBCATEGORIES: SubcategoryMeta[] = [
     gradient: "from-brand-green/15 to-brand-beige",
     ring: "group-hover:border-brand-green/60",
     dot: "bg-brand-green",
+    jar: "#1f8a70",
   },
   {
     key: "joints",
@@ -40,6 +43,7 @@ export const SUBCATEGORIES: SubcategoryMeta[] = [
     gradient: "from-brand-sea/15 to-brand-beige",
     ring: "group-hover:border-brand-sea/60",
     dot: "bg-brand-sea",
+    jar: "#3f63a8",
   },
   {
     key: "body",
@@ -50,6 +54,7 @@ export const SUBCATEGORIES: SubcategoryMeta[] = [
     gradient: "from-brand-forest/15 to-brand-beige",
     ring: "group-hover:border-brand-forest/60",
     dot: "bg-brand-forest",
+    jar: "#2f7a3a",
   },
   {
     key: "face",
@@ -60,6 +65,7 @@ export const SUBCATEGORIES: SubcategoryMeta[] = [
     gradient: "from-brand-poppy/15 to-brand-beige",
     ring: "group-hover:border-brand-poppy/60",
     dot: "bg-brand-poppy",
+    jar: "#c8467f",
   },
   {
     key: "hair",
@@ -70,6 +76,7 @@ export const SUBCATEGORIES: SubcategoryMeta[] = [
     gradient: "from-brand-terracotta/15 to-brand-beige",
     ring: "group-hover:border-brand-terracotta/60",
     dot: "bg-brand-terracotta",
+    jar: "#b5622e",
   },
   {
     key: "repellent",
@@ -80,6 +87,7 @@ export const SUBCATEGORIES: SubcategoryMeta[] = [
     gradient: "from-brand-gold/20 to-brand-beige",
     ring: "group-hover:border-brand-gold/60",
     dot: "bg-brand-gold",
+    jar: "#a88416",
   },
   {
     key: "other",
@@ -90,6 +98,7 @@ export const SUBCATEGORIES: SubcategoryMeta[] = [
     gradient: "from-brand-lavender/20 to-brand-beige",
     ring: "group-hover:border-brand-lavender/70",
     dot: "bg-brand-lavender",
+    jar: "#6b58a8",
   },
 ];
 
@@ -105,9 +114,10 @@ export interface CategoryMeta {
   label: string;
   /** false — карточки ещё не заведены, показываем анонс. */
   available: boolean;
-  /** Факты из брошюры бренда. */
+  /** Тексты — из брошюры бренда. */
   teaser: string;
   details?: string[];
+  image?: { src: string; width: number; height: number; alt: string };
 }
 
 export const CATEGORIES: CategoryMeta[] = [
@@ -115,25 +125,32 @@ export const CATEGORIES: CategoryMeta[] = [
     key: "balm",
     label: "Бальзамы",
     available: true,
-    teaser: "Бальзамы 15 г на эфирных маслах, экстрактах крымских растений и пчелином воске.",
+    teaser:
+      "Серия жировых кремов «Крымский бальзам» на основе растительных масел и восков с высоким содержанием биологически активных экстрактов и эфирных масел.",
+    image: { src: "/products/limonnik-i-roza-brochure.webp", width: 1000, height: 1000, alt: "Баночка «Крымский бальзам» с розой и лимонником" },
   },
   {
     key: "soap",
     label: "Мыло ручной работы",
     available: false,
-    teaser: "30 сортов с ароматами натуральных эфирных масел.",
-    details: ["Монастырская коллекция — 9 сортов, сваренных по традиционным рецептам."],
+    teaser: "Натуральное «Крымское мыло» с ароматами эфирных масел из трав, выращенных на склонах Крымских гор.",
+    details: [
+      "30 сортов с уникальными ароматами натуральных эфирных масел.",
+      "9 сортов целебного мыла монастырской коллекции, сваренных по традиционным рецептам.",
+    ],
+    image: { src: "/brochure/line-soap.webp", width: 713, height: 455, alt: "Кусочки крымского мыла ручной работы" },
   },
   {
     key: "lip-balm",
     label: "Бальзамы для губ",
     available: false,
-    teaser: "Гигиенические бальзамы для губ.",
+    teaser: "Гигиенические бальзамы с мягкой текстурой, тонким ароматом и приятным вкусом.",
     details: [
-      "Детская линейка: Мороженое, Шоколад, Малина, Земляника.",
-      "Травяные: Мелисса, Ромашка.",
-      "Премиум: Крымская Роза — на эфирном масле розы.",
+      "Детская линейка: «Мороженое», «Шоколад», «Малина», «Земляника».",
+      "Травяные «Мелисса» и «Ромашка» способствуют заживлению трещинок и избавлению от шелушения.",
+      "«Крымская Роза» — на настоящем эфирном масле розы.",
     ],
+    image: { src: "/brochure/line-lip-balms.webp", width: 603, height: 640, alt: "Бальзамы для губ «Фитон Крым» в баночках и коробочках" },
   },
 ];
 

@@ -1,13 +1,17 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { products as baseProducts, type Product } from "@/data/catalog";
+import { products as publishedProducts, type Product } from "@/data/catalog";
+import { applyOverrides } from "@/data/catalog/sanitize";
 import { catalogStore } from "@/services";
 import { mergeProduct, type OverrideMap, type ProductOverride } from "@/services/catalog-store";
 
 interface CatalogContextValue {
+  /** Черновики правок администратора (в этом браузере). */
   overrides: OverrideMap;
-  /** Каталог с применёнными правками админа. */
+  /** Все товары с черновиками, включая скрытые и новые. */
+  allProducts: Product[];
+  /** Товары на витрине. */
   products: Product[];
   setOverride: (slug: string, patch: ProductOverride) => void;
   clearOverride: (slug: string) => void;
@@ -26,7 +30,7 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
     if (!res.ok) {
       throw new Error(
         res.reason === "quota"
-          ? "Хранилище браузера переполнено. Удалите часть фото или уменьшите их."
+          ? "Хранилище браузера переполнено. Опубликуйте или удалите часть фото."
           : "Браузер запрещает сохранять данные."
       );
     }
@@ -34,8 +38,7 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const setOverride = useCallback(
-    (slug: string, patch: ProductOverride) =>
-      commit({ ...overrides, [slug]: { ...overrides[slug], ...patch } }),
+    (slug: string, patch: ProductOverride) => commit({ ...overrides, [slug]: { ...overrides[slug], ...patch } }),
     [commit, overrides]
   );
 
@@ -48,14 +51,12 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
     [commit, overrides]
   );
 
-  const products = useMemo(
-    () => baseProducts.map((p) => mergeProduct(p, overrides[p.slug])),
-    [overrides]
-  );
+  const allProducts = useMemo(() => applyOverrides(publishedProducts, overrides), [overrides]);
+  const products = useMemo(() => allProducts.filter((p) => !p.hidden), [allProducts]);
 
   const value = useMemo<CatalogContextValue>(
-    () => ({ overrides, products, setOverride, clearOverride, replaceAll: commit }),
-    [overrides, products, setOverride, clearOverride, commit]
+    () => ({ overrides, allProducts, products, setOverride, clearOverride, replaceAll: commit }),
+    [overrides, allProducts, products, setOverride, clearOverride, commit]
   );
 
   return <CatalogContext.Provider value={value}>{children}</CatalogContext.Provider>;
@@ -67,7 +68,7 @@ export function useCatalog(): CatalogContextValue {
   return ctx;
 }
 
-/** Товар с правками админа; на сервере и до гидрации — базовые данные. */
+/** Товар с черновиками админа; на сервере и до гидрации — опубликованные данные. */
 export function useProduct(base: Product): Product {
   const { overrides } = useCatalog();
   return mergeProduct(base, overrides[base.slug]);

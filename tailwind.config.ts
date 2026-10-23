@@ -1,35 +1,34 @@
 import type { Config } from "tailwindcss";
 
+// Палитра снята с брошюры «Целебные бальзамы Крыма»:
+// пергамент и опалённые края обложки, золотые поля страниц, красные заголовки,
+// зелёная лента логотипа, море и полевые цветы с картины в венке.
 const config: Config = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
       colors: {
         brand: {
-          green: "#2E5E4E",
-          forest: "#3F6B4E",
-          gold: "#C8A96E",
-          beige: "#F4F0EA",
-          cream: "#FAF6EF",
-          sea: "#5E8AA8",
-          poppy: "#D04A3A",
-          lavender: "#A89AC8",
-          terracotta: "#C8946E",
-          plum: "#7A4A6E",
+          green: "#2D5B36", // тёмная зелень ленты логотипа: текст, кнопки
+          leaf: "#5E9E45", // светлый блик ленты
+          forest: "#3F7A3E",
+          crimson: "#A3232B", // заголовки разделов брошюры
+          maroon: "#5A2420", // крупный заголовок обложки
+          gold: "#8A6118", // золото для текста и тонких линий
+          amber: "#E2B84F", // золотые поля страниц, травы-силуэты
+          beige: "#F4E9D4", // пергамент
+          cream: "#FCF7EC", // светлый центр страницы
+          terracotta: "#B5622E", // опалённый край, дерево баночек
+          sea: "#5A68A6", // сине-лиловое море картины
+          poppy: "#C8322A", // мак из венка
+          lavender: "#7F6BB0", // колокольчик
+          plum: "#6A3F6E",
         },
       },
       fontFamily: {
-        serif: ["var(--font-cormorant)", "Cormorant Garamond", "serif"],
+        display: ["var(--font-display)", "Georgia", "serif"],
+        serif: ["var(--font-serif)", "Georgia", "serif"],
         sans: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
-      },
-      keyframes: {
-        fadeIn: {
-          "0%": { opacity: "0", transform: "translateY(12px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-      },
-      animation: {
-        "fade-in": "fadeIn 0.7s ease-out forwards",
       },
     },
   },

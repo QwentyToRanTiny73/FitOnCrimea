@@ -31,9 +31,22 @@ export default function AccountPage() {
         title={user.name}
         lead={`${user.email} · с ${new Date(user.createdAt).toLocaleDateString("ru-RU")}`}
       />
-      <div className="mb-8">
-        <DemoNotice />
-      </div>
+      {isAdmin ? (
+        <Link
+          href="/admin"
+          className="paper-page mb-8 flex items-center justify-between gap-4 rounded-2xl border-l-4 border-brand-crimson p-5 hover:shadow-md"
+        >
+          <span>
+            <span className="title-crimson block font-serif text-xl font-bold uppercase">Кабинет администратора</span>
+            <span className="text-sm text-brand-green/80">Товары, фото, публикация на сайт, таблица Excel</span>
+          </span>
+          <span className="text-2xl text-brand-crimson" aria-hidden="true">→</span>
+        </Link>
+      ) : (
+        <div className="mb-8">
+          <DemoNotice />
+        </div>
+      )}
 
       <section className="mb-10">
         <div className="mb-4 flex items-center justify-between">
@@ -51,7 +64,7 @@ export default function AccountPage() {
             ))}
           </ul>
         ) : (
-          <p className="rounded-2xl border border-brand-green/10 bg-white/60 py-10 text-center text-brand-green/70">
+          <p className="rounded-2xl border border-brand-amber/50 bg-brand-cream py-10 text-center text-brand-green/70">
             Пока пусто — отмечайте бальзамы сердечком в{" "}
             <Link href="/catalog" className="underline decoration-brand-gold underline-offset-4">
               каталоге

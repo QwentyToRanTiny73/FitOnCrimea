@@ -38,7 +38,7 @@ export default function RegisterPage() {
       <SectionHeading as="h1" eyebrow="Личный кабинет" title="Регистрация" lead="Аккаунт нужен, чтобы сохранять избранные бальзамы." />
       <div className="space-y-4">
         <DemoNotice />
-        <form onSubmit={onSubmit} className="space-y-4 rounded-2xl border border-brand-green/10 bg-white/75 p-6">
+        <form onSubmit={onSubmit} className="space-y-4 rounded-2xl border border-brand-amber/50 bg-brand-cream p-6">
           <Field label="Имя">
             <input value={form.name} onChange={(e) => set("name", e.target.value)} autoComplete="name" className={inputClass} />
           </Field>

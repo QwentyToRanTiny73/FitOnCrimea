@@ -142,7 +142,7 @@ export function CategoryGrid({ className }: { className?: string }) {
         <Link key={t.key} href={t.href} className="group flex flex-col items-center gap-2 text-center">
           <span
             className={cn(
-              "flex h-16 w-16 items-center justify-center rounded-full border border-brand-green/15 shadow-sm transition-colors sm:h-24 sm:w-24",
+              "flex h-16 w-16 items-center justify-center rounded-full border-2 border-brand-amber bg-brand-cream shadow-[inset_0_0_0_3px_#fcf7ec,inset_0_0_0_4px_rgba(138,97,24,0.35)] transition-transform group-hover:-translate-y-0.5 sm:h-24 sm:w-24",
               t.tint,
               t.ring,
               t.text
@@ -152,7 +152,7 @@ export function CategoryGrid({ className }: { className?: string }) {
               {DRAW[t.key]}
             </svg>
           </span>
-          <span className="max-w-[6.5rem] text-[11px] leading-tight text-brand-green/85 group-hover:text-brand-green sm:text-sm">
+          <span className="max-w-[6.5rem] font-serif text-xs font-bold leading-tight text-brand-green group-hover:text-brand-crimson sm:text-sm">
             {t.label}
           </span>
         </Link>

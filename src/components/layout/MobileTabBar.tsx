@@ -23,7 +23,7 @@ export function MobileTabBar() {
   return (
     <nav
       aria-label="Быстрая навигация"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-brand-green/10 bg-brand-beige/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-brand-amber/50 bg-brand-cream/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
     >
       <ul className="grid h-16 grid-cols-5">
         {tabs.map(({ href, label, Icon, exact, badge }) => {

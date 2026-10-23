@@ -9,12 +9,12 @@ export function BotanicalDivider({ className }: OrnamentProps) {
   return (
     <div
       className={cn(
-        "flex items-center justify-center gap-4 text-brand-green/70",
+        "flex items-center justify-center gap-4 text-brand-gold",
         className
       )}
       aria-hidden="true"
     >
-      <span className="h-px flex-1 max-w-[120px] bg-gradient-to-r from-transparent via-brand-green/30 to-brand-green/30" />
+      <span className="h-px flex-1 max-w-[120px] bg-gradient-to-r from-transparent via-brand-amber to-brand-amber" />
       <svg
         width="48"
         height="16"
@@ -40,7 +40,7 @@ export function BotanicalDivider({ className }: OrnamentProps) {
           opacity="0.6"
         />
       </svg>
-      <span className="h-px flex-1 max-w-[120px] bg-gradient-to-l from-transparent via-brand-green/30 to-brand-green/30" />
+      <span className="h-px flex-1 max-w-[120px] bg-gradient-to-l from-transparent via-brand-amber to-brand-amber" />
     </div>
   );
 }

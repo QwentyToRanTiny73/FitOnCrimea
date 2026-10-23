@@ -25,6 +25,15 @@ export const site = {
     /** Ссылка на магазин бренда на Ozon — заполнить после публикации. */
     storeUrl: "",
   },
+  /**
+   * Репозиторий сайта: сюда админка публикует правки и фото.
+   * В сборке на GitHub подставляется автоматически.
+   */
+  repo: {
+    owner: (process.env.NEXT_PUBLIC_GITHUB_REPO ?? "QwentyToRanTiny73/FitOnCrimea").split("/")[0],
+    repo: (process.env.NEXT_PUBLIC_GITHUB_REPO ?? "QwentyToRanTiny73/FitOnCrimea").split("/")[1],
+    branch: process.env.NEXT_PUBLIC_GITHUB_BRANCH || "main",
+  },
   legal: {
     /** Дата редакции политики конфиденциальности (ГГГГ-ММ-ДД). */
     privacyRevision: "2026-10-19",
@@ -48,5 +57,4 @@ export const FOOTER_NAV: NavItem[] = [
   ...MAIN_NAV,
   { href: "/favorites", label: "Избранное" },
   { href: "/account", label: "Личный кабинет" },
-  { href: "/privacy", label: "Политика конфиденциальности" },
 ];

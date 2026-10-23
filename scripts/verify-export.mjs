@@ -19,6 +19,10 @@ const must = [
   "massage-points.jpg",
   "logo.svg",
   ".nojekyll",
+  "admin/index.html",
+  "brochure/cover-wreath.webp",
+  "brochure/stamp-swallow-nest.webp",
+  "products/limonnik-i-roza-brochure.webp",
 ];
 for (const f of must) if (!existsSync(join(OUT, f))) errors.push(`нет файла out/${f}`);
 

@@ -1,28 +1,12 @@
-import type { Product } from "@/data/catalog/types";
+import { sanitizeOverrideMap } from "@/data/catalog/sanitize";
+import type { OverrideMap, Product, ProductOverride } from "@/data/catalog/types";
 import { readJSON, writeJSON, type WriteResult } from "./storage";
 
-export type ProductOverride = Partial<
-  Pick<
-    Product,
-    | "name"
-    | "tagline"
-    | "price"
-    | "badges"
-    | "shortDescription"
-    | "effect"
-    | "composition"
-    | "application"
-    | "contraindications"
-    | "ozonUrl"
-    | "images"
-  >
->;
-
-export type OverrideMap = Record<string, ProductOverride>;
+export type { OverrideMap, ProductOverride };
 
 /**
- * Хранилище правок каталога из админки. Сейчас — localStorage браузера
- * администратора. Замена на CMS/базу: новая реализация того же контракта.
+ * Черновики правок из админки. Хранятся в браузере администратора,
+ * пока их не опубликуют (services/publisher.ts) или не сбросят.
  */
 export interface CatalogStore {
   readonly mode: "local-demo" | "remote";
@@ -32,7 +16,7 @@ export interface CatalogStore {
 
 export const localCatalogStore: CatalogStore = {
   mode: "local-demo",
-  load: () => readJSON<OverrideMap>("overrides", {}),
+  load: () => sanitizeOverrideMap(readJSON<unknown>("overrides", {})),
   save: (map) => writeJSON("overrides", map),
 };
 

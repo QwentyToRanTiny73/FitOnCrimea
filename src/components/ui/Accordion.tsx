@@ -15,13 +15,13 @@ export function Accordion({
   return (
     <details
       open={defaultOpen}
-      className={cn("group border-b border-brand-green/15 py-4 [&_summary::-webkit-details-marker]:hidden", className)}
+      className={cn("group border-b border-brand-amber/50 py-4 [&_summary::-webkit-details-marker]:hidden", className)}
     >
       <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
-        <span className="font-serif text-lg sm:text-xl text-brand-green">{title}</span>
+        <span className="font-serif text-lg font-bold text-brand-green sm:text-xl">{title}</span>
         <span
           aria-hidden="true"
-          className="text-2xl leading-none text-brand-gold transition-transform group-open:rotate-45"
+          className="text-2xl leading-none text-brand-crimson transition-transform group-open:rotate-45"
         >
           +
         </span>

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { products } from "@/data/catalog";
+import { visibleProducts } from "@/data/catalog";
 import { absoluteUrl } from "@/lib/utils";
 
 export const dynamic = "force-static";
@@ -18,6 +18,6 @@ const PAGES: Array<[path: string, priority: number]> = [
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...PAGES.map(([path, priority]) => ({ url: absoluteUrl(path), priority })),
-    ...products.map((p) => ({ url: absoluteUrl(`/catalog/${p.slug}/`), priority: 0.8 })),
+    ...visibleProducts().map((p) => ({ url: absoluteUrl(`/catalog/${p.slug}/`), priority: 0.8 })),
   ];
 }
