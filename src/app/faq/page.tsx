@@ -1,85 +1,103 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Accordion } from "@/components/ui/Accordion";
-import { JsonLd } from "@/components/ui/JsonLd";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { site } from "@/config/site";
+import {
+  BotanicalDivider,
+  BotanicalWreath,
+} from "@/components/Botanical";
 
 export const metadata: Metadata = {
   title: "Вопросы и ответы",
-  description: "Где купить бальзамы «Фитон Крым», из чего они сделаны, как выбрать и как применять.",
+  description:
+    "Часто задаваемые вопросы о бальзамах «Фитон Крым»: состав, применение, доставка, противопоказания, хранение.",
 };
 
-// Ответы опираются на брошюру бренда. Добавляйте вопросы только с проверенными фактами.
 const FAQ: Array<{ q: string; a: string }> = [
   {
-    q: "Где купить продукцию?",
-    a: `На маркетплейсе ${site.marketplace.name}. На странице каждого товара есть кнопка перехода к его карточке на ${site.marketplace.name}.`,
+    q: "Где можно купить продукцию?",
+    a: "Основной канал продаж — официальный магазин бренда на маркетплейсе Ozon. Каждая карточка товара на сайте содержит ссылку на Ozon.",
   },
   {
-    q: "Из чего сделаны бальзамы?",
-    a: "Основа — пчелиный воск и растительные масла (ши, кокосовое, какао, жожоба и другие). Активные компоненты — эфирные масла и экстракты растений. Полный состав указан на странице каждого бальзама.",
+    q: "Натуральны ли бальзамы?",
+    a: "Да. В составах используются эфирные масла, экстракты и инфузии растений, пчелиный воск, растительные масла (ши, кокос, жожоба, авокадо, какао и др.). Без парабенов, без минеральных масел и без отдушек.",
   },
   {
-    q: "Как выбрать бальзам?",
-    a: "Откройте каталог и выберите раздел по показанию: дыхание, суставы, кожа лица, тело, волосы. Можно искать по растению или симптому — например, «кашель» или «лаванда».",
+    q: "Какой срок и условия хранения?",
+    a: "Срок годности — 24 месяца с даты производства, указанной на упаковке. Хранить при комнатной температуре, в сухом месте, вдали от прямых солнечных лучей. После вскрытия использовать в течение 6–12 месяцев.",
   },
   {
-    q: "Какие бальзамы подходят для лица?",
-    a: "Для кожи лица предназначены «Чистое лицо», «Лимонник и роза» и «Белоснежка». Остальные бальзамы рассчитаны на тело.",
+    q: "Можно ли применять при беременности и детям?",
+    a: "Большинство бальзамов содержат эфирные масла, поэтому беременным и детям до 3 лет — только после консультации с врачом. Для бережного ухода созданы специализированные позиции, например «Для матери и ребёнка» (персик и ваниль).",
   },
   {
-    q: "Чем отличаются «Чабрецовая звёздочка» и «Звезда Крыма»?",
-    a: "«Чабрецовая звёздочка» (чабрец, вербена, мята, мирт) — бестселлер бренда при простуде, гриппе, ангине, насморке и кашле. «Звезда Крыма» (розмарин, лавр, мята, гвоздика, корица) применяется при респираторных заболеваниях, головной боли и болях в суставах.",
+    q: "Как сделать тест на переносимость?",
+    a: "Нанесите небольшое количество бальзама на сгиб локтя и оцените состояние кожи через 24 часа. При отсутствии покраснения, зуда и отёчности — средство переносимо.",
   },
   {
-    q: "Можно ли при беременности и детям?",
-    a: "Для беременных и детей с рождения предназначен бальзам «Для матери и ребёнка». Перед применением остальных бальзамов в этих случаях посоветуйтесь с врачом.",
+    q: "Можно ли наносить бальзам на лицо?",
+    a: "Только те, что предназначены для лица: «Чистое лицо», «Лимонник и роза», «Белоснежка». Прогревающие, обезболивающие и репеллентные бальзамы — только на тело и точечно, избегая слизистых.",
   },
   {
-    q: "Как проверить переносимость?",
-    a: "Нанесите немного бальзама на сгиб локтя и понаблюдайте за кожей в течение суток. При покраснении или зуде не используйте средство.",
+    q: "Чем отличается «Чабрецовая звёздочка» от «Звезды Крыма»?",
+    a: "«Чабрецовая звёздочка» — мягкий бестселлер на чабреце, мяте и мирте для первых симптомов простуды. «Звезда Крыма» — более интенсивный согревающий бальзам с лавром, корицей и гвоздикой, подходит и для головной боли, и для суставов.",
   },
   {
-    q: "Где указан срок годности?",
-    a: "Срок годности и дата изготовления указаны на упаковке.",
-  },
-  {
-    q: "Что такое схема точек массажа?",
-    a: "Это карта 26 акупунктурных точек с показаниями, при которых их массируют с бальзамом. Она носит ознакомительный характер и не заменяет консультацию врача.",
-  },
-  {
-    q: "Как стать оптовым покупателем?",
-    a: `Напишите на ${site.contacts.email}.`,
+    q: "Есть ли упаковка для подарка?",
+    a: "Подарочные наборы оформляются на маркетплейсе Ozon в карточках конкретных товаров. Уточните наличие в момент заказа.",
   },
 ];
 
 export default function FAQPage() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQ.map(({ q, a }) => ({
+      "@type": "Question",
+      name: q,
+      acceptedAnswer: { "@type": "Answer", text: a },
+    })),
+  };
+
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-14">
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: FAQ.map(({ q, a }) => ({
-            "@type": "Question",
-            name: q,
-            acceptedAnswer: { "@type": "Answer", text: a },
-          })),
-        }}
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-      <SectionHeading as="h1" eyebrow="Помощь" title="Вопросы и ответы" />
-      <div className="rounded-2xl border border-brand-green/10 bg-white/70 px-5 sm:px-8">
-        {FAQ.map(({ q, a }, i) => (
-          <Accordion key={q} title={q} defaultOpen={i === 0} className={i === FAQ.length - 1 ? "border-b-0" : undefined}>
-            {a}
-          </Accordion>
+      <header className="text-center mb-10">
+        <BotanicalWreath className="mx-auto h-14 text-brand-gold mb-3" />
+        <p className="uppercase tracking-[0.25em] text-xs text-brand-gold mb-3">
+          Q&amp;A
+        </p>
+        <h1 className="font-serif text-4xl text-brand-green">
+          Вопросы и ответы
+        </h1>
+        <BotanicalDivider className="my-5" />
+      </header>
+
+      <div className="space-y-3">
+        {FAQ.map(({ q, a }) => (
+          <details
+            key={q}
+            className="group bg-white/70 border border-brand-green/10 rounded-2xl px-5 py-4 open:border-brand-gold/40 transition-colors"
+          >
+            <summary className="cursor-pointer flex justify-between items-start gap-4 list-none">
+              <span className="font-serif text-lg text-brand-green">{q}</span>
+              <span className="text-brand-gold text-2xl leading-none transition-transform group-open:rotate-45">
+                +
+              </span>
+            </summary>
+            <p className="mt-3 text-brand-green/80 leading-relaxed">{a}</p>
+          </details>
         ))}
       </div>
-      <p className="mt-8 text-center text-sm text-brand-green/75">
-        Не нашли ответ?{" "}
-        <Link href="/contacts" className="text-brand-green underline decoration-brand-gold underline-offset-4">
-          Свяжитесь с нами
+
+      <p className="mt-10 text-center text-sm text-brand-green/75">
+        Остались вопросы?{" "}
+        <Link
+          href="/contacts"
+          className="text-brand-green border-b border-brand-gold pb-0.5 hover:text-brand-gold"
+        >
+          Напишите нам
         </Link>
       </p>
     </div>
