@@ -7,8 +7,15 @@ const config: Config = {
       colors: {
         brand: {
           green: "#2E5E4E",
+          forest: "#3F6B4E",
           gold: "#C8A96E",
           beige: "#F4F0EA",
+          cream: "#FAF6EF",
+          sea: "#5E8AA8",
+          poppy: "#D04A3A",
+          lavender: "#A89AC8",
+          terracotta: "#C8946E",
+          plum: "#7A4A6E",
         },
       },
       fontFamily: {

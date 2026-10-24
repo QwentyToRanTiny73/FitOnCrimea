@@ -3,145 +3,75 @@
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/auth";
-import {
-  BotanicalDivider,
-  BotanicalWreath,
-} from "@/components/Botanical";
+import { DemoNotice } from "@/components/ui/DemoNotice";
+import { Field, Notice, inputClass, primaryButton } from "@/components/ui/Form";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { useAuth } from "@/providers";
 
 export default function RegisterPage() {
   const router = useRouter();
   const { register } = useAuth();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
-  const [agree, setAgree] = useState(false);
+  const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "", agree: false });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  async function handleSubmit(e: FormEvent) {
+  const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) => setForm((f) => ({ ...f, [k]: v }));
+
+  async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    setBusy(true);
     setError(null);
+    if (form.password !== form.confirm) return setError("Пароли не совпадают.");
+    if (!form.agree) return setError("Нужно согласие на обработку персональных данных.");
+    setBusy(true);
     try {
-      if (password !== confirm) throw new Error("Пароли не совпадают.");
-      if (!agree)
-        throw new Error("Необходимо согласие на обработку персональных данных.");
-      await register({ email, password, name });
+      await register({ name: form.name, email: form.email, password: form.password });
       router.push("/account");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Ошибка регистрации.");
+      setError(err instanceof Error ? err.message : "Не удалось зарегистрироваться.");
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <div className="max-w-md mx-auto px-4 sm:px-6 py-12 sm:py-20">
-      <div className="text-center mb-8">
-        <BotanicalWreath className="mx-auto h-14 text-brand-gold mb-3" />
-        <h1 className="font-serif text-4xl text-brand-green">Регистрация</h1>
-        <BotanicalDivider className="my-5" />
-        <p className="text-brand-green/75 text-sm">
-          Создайте аккаунт, чтобы сохранять бальзамы в избранное.
-        </p>
+    <div className="mx-auto max-w-md px-4 py-8 sm:py-14">
+      <SectionHeading as="h1" eyebrow="Личный кабинет" title="Регистрация" lead="Аккаунт нужен, чтобы сохранять избранные бальзамы." />
+      <div className="space-y-4">
+        <DemoNotice />
+        <form onSubmit={onSubmit} className="space-y-4 rounded-2xl border border-brand-green/10 bg-white/75 p-6">
+          <Field label="Имя">
+            <input value={form.name} onChange={(e) => set("name", e.target.value)} autoComplete="name" className={inputClass} />
+          </Field>
+          <Field label="Email">
+            <input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} required autoComplete="email" className={inputClass} />
+          </Field>
+          <Field label="Пароль" hint="Не короче 8 символов. Не используйте пароль от почты или банка.">
+            <input type="password" value={form.password} onChange={(e) => set("password", e.target.value)} required minLength={8} autoComplete="new-password" className={inputClass} />
+          </Field>
+          <Field label="Повторите пароль">
+            <input type="password" value={form.confirm} onChange={(e) => set("confirm", e.target.value)} required minLength={8} autoComplete="new-password" className={inputClass} />
+          </Field>
+          <label className="flex items-start gap-3 text-sm text-brand-green/80">
+            <input type="checkbox" checked={form.agree} onChange={(e) => set("agree", e.target.checked)} className="mt-1 h-4 w-4 accent-brand-green" />
+            <span>
+              Согласен(на) на обработку персональных данных согласно{" "}
+              <Link href="/privacy" className="underline decoration-brand-gold underline-offset-2">
+                политике конфиденциальности
+              </Link>
+              .
+            </span>
+          </label>
+          {error && <Notice tone="error">{error}</Notice>}
+          <button type="submit" disabled={busy} className={`${primaryButton} w-full`}>
+            {busy ? "Создаём…" : "Создать аккаунт"}
+          </button>
+        </form>
       </div>
-
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white/70 border border-brand-green/10 rounded-2xl p-6 space-y-4"
-      >
-        <label className="block">
-          <span className="text-sm text-brand-green/80">Имя</span>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            autoComplete="name"
-            className="mt-1 w-full px-4 py-2 rounded-lg border border-brand-green/20 bg-white focus:border-brand-gold focus:outline-none"
-          />
-        </label>
-        <label className="block">
-          <span className="text-sm text-brand-green/80">Email</span>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoComplete="email"
-            className="mt-1 w-full px-4 py-2 rounded-lg border border-brand-green/20 bg-white focus:border-brand-gold focus:outline-none"
-          />
-        </label>
-        <label className="block">
-          <span className="text-sm text-brand-green/80">
-            Пароль (от 6 символов)
-          </span>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={6}
-            autoComplete="new-password"
-            className="mt-1 w-full px-4 py-2 rounded-lg border border-brand-green/20 bg-white focus:border-brand-gold focus:outline-none"
-          />
-        </label>
-        <label className="block">
-          <span className="text-sm text-brand-green/80">Повторите пароль</span>
-          <input
-            type="password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            required
-            minLength={6}
-            autoComplete="new-password"
-            className="mt-1 w-full px-4 py-2 rounded-lg border border-brand-green/20 bg-white focus:border-brand-gold focus:outline-none"
-          />
-        </label>
-
-        <label className="flex items-start gap-3 text-xs text-brand-green/75">
-          <input
-            type="checkbox"
-            checked={agree}
-            onChange={(e) => setAgree(e.target.checked)}
-            className="mt-1"
-          />
-          <span>
-            Соглашаюсь на обработку персональных данных в соответствии с
-            политикой конфиденциальности (ФЗ-152).
-          </span>
-        </label>
-
-        {error && (
-          <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-            {error}
-          </p>
-        )}
-
-        <button
-          type="submit"
-          disabled={busy}
-          className="w-full px-6 py-3 rounded-full bg-brand-green text-brand-beige hover:bg-brand-green/90 transition-colors disabled:opacity-60"
-        >
-          {busy ? "Создаём..." : "Создать аккаунт"}
-        </button>
-      </form>
-
-      <p className="text-center mt-6 text-sm text-brand-green/75">
+      <p className="mt-6 text-center text-sm text-brand-green/75">
         Уже есть аккаунт?{" "}
-        <Link
-          href="/account/login"
-          className="text-brand-green border-b border-brand-gold pb-0.5 hover:text-brand-gold"
-        >
+        <Link href="/account/login" className="text-brand-green underline decoration-brand-gold underline-offset-4">
           Войти
         </Link>
-      </p>
-
-      <p className="text-center mt-6 text-xs text-brand-green/55 leading-relaxed">
-        Внимание: сейчас данные хранятся локально в браузере (демо-режим).
-        Перед публичным запуском необходимо подключить серверный бэкенд
-        авторизации — см. README.
       </p>
     </div>
   );
