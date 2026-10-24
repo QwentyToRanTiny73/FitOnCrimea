@@ -1,127 +1,102 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  BotanicalDivider,
-  BotanicalWreath,
-} from "@/components/Botanical";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { assetUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Точки массажа с крымским бальзамом",
   description:
-    "Схема из 26 акупунктурных точек для массажа с бальзамами «Фитон Крым»: показания и локализация на теле.",
+    "Схема 26 акупунктурных точек для массажа с бальзамами «Фитон Крым» и показания к каждой точке.",
 };
 
-const POINTS: Array<{ n: number; text: string }> = [
-  { n: 1, text: "ринит, насморк, головная боль, ОРВИ, гипертонический криз" },
-  { n: 2, text: "гипертония, бессонница, атеросклероз" },
-  { n: 3, text: "метеочувствительность, стресс, переутомление" },
-  { n: 4, text: "зубная боль, боль в ухе" },
-  { n: 5, text: "спазматический кашель, астма" },
-  { n: 6, text: "ангина, боль в горле" },
-  { n: 7, text: "слабость иммунной системы" },
-  { n: 8, text: "глазная боль, перевозбуждение" },
-  { n: 9, text: "меланхолия, бессонница" },
-  { n: 10, text: "гипотония" },
-  { n: 11, text: "боль в области сердца" },
-  { n: 12, text: "тревожность, взволнованность" },
-  { n: 13, text: "спазматическая головная боль" },
-  { n: 14, text: "холецистит, жёлчная колика" },
-  { n: 15, text: "пояснично-крестцовый радикулит, ишиас" },
-  { n: 16, text: "половая слабость, поясничная боль" },
-  { n: 17, text: "раздражительность, истерия, бессонница" },
-  { n: 18, text: "стенокардия, боль в животе, расстройство месячных циклов" },
-  { n: 19, text: "переутомление, слабое внимание" },
-  { n: 20, text: "онемение рук, слабость" },
-  { n: 21, text: "шейный остеохондроз" },
-  { n: 22, text: "избыточный вес" },
-  { n: 23, text: "межрёберная невралгия" },
-  { n: 24, text: "радикулит" },
-  { n: 25, text: "боль в локтевом суставе" },
-  { n: 26, text: "атеросклероз" },
+const IMAGE = "/massage-points.jpg";
+
+// Показания перенесены из брошюры бренда без изменений.
+const POINTS: string[] = [
+  "ринит, насморк, головная боль, ОРВИ, гипертонический криз",
+  "гипертония, бессонница, атеросклероз",
+  "метеочувствительность, стресс, переутомление",
+  "зубная боль, боль в ухе",
+  "спазматический кашель, астма",
+  "ангина, боль в горле",
+  "слабость иммунной системы",
+  "глазная боль, перевозбуждение",
+  "меланхолия, бессонница",
+  "гипотония",
+  "боль в области сердца",
+  "тревожность, взволнованность",
+  "спазматическая головная боль",
+  "холецистит, желчная колика",
+  "пояснично-крестцовый радикулит, ишиас",
+  "половая слабость, поясничная боль",
+  "раздражительность, истерия, бессонница",
+  "стенокардия, боль в животе, расстройство месячных циклов",
+  "переутомление, слабое внимание",
+  "онемение рук, слабость",
+  "шейный остеохондроз",
+  "избыточный вес",
+  "межрёберная невралгия",
+  "радикулит",
+  "боль в локтевом суставе",
+  "атеросклероз",
 ];
 
 export default function MassagePointsPage() {
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
-      <header className="text-center mb-10">
-        <BotanicalWreath className="mx-auto h-16 text-brand-gold mb-4" />
-        <p className="uppercase tracking-[0.25em] text-xs text-brand-gold mb-4">
-          Схема применения
-        </p>
-        <h1 className="font-serif text-4xl sm:text-5xl text-brand-green">
-          Точки массажа с крымским бальзамом
-        </h1>
-        <BotanicalDivider className="my-6" />
-        <p className="max-w-2xl mx-auto text-brand-green/80 font-serif italic">
-          26 акупунктурных точек с показаниями — карта, с которой можно
-          использовать бальзамы линии «Фитон Крым».
-        </p>
-      </header>
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-14">
+      <SectionHeading
+        as="h1"
+        eyebrow="Схема применения"
+        title="Точки массажа с крымским бальзамом"
+        lead="26 акупунктурных точек и показания к ним. Нажмите на схему, чтобы открыть её в полном размере."
+      />
 
-      <div className="grid md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-10 items-start">
-        <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-white/60 border border-brand-green/10 shadow-sm">
+      <div className="grid items-start gap-8 lg:grid-cols-2 lg:gap-12">
+        <a
+          href={assetUrl(IMAGE)}
+          target="_blank"
+          rel="noopener"
+          className="relative block aspect-[1400/2048] overflow-hidden rounded-2xl border border-brand-green/10 bg-white shadow-sm lg:sticky lg:top-24"
+        >
           <Image
-            src="/massage-points.jpg"
-            alt="Акупунктурные точки для массажа с крымским бальзамом — три грации"
+            src={assetUrl(IMAGE)}
+            alt="Схема акупунктурных точек для массажа с крымским бальзамом, точки пронумерованы от 1 до 26"
             fill
-            sizes="(max-width: 768px) 100vw, 500px"
-            className="object-contain"
             priority
+            sizes="(max-width: 1024px) 100vw, 560px"
+            className="object-contain"
           />
-        </div>
+        </a>
 
         <div>
-          <h2 className="font-serif text-2xl text-brand-green mb-4">
-            Показания по точкам
-          </h2>
-          <BotanicalDivider className="mb-6" />
-          <ol className="space-y-3">
-            {POINTS.map((p) => (
-              <li
-                key={p.n}
-                className="flex gap-4 text-brand-green/85 text-sm leading-relaxed"
-              >
-                <span className="font-serif text-brand-gold text-lg leading-none pt-0.5 min-w-[2ch] text-right">
-                  {p.n}.
+          <h2 className="mb-4 font-serif text-2xl text-brand-green">Показания по точкам</h2>
+          <ol className="divide-y divide-brand-green/10 rounded-2xl border border-brand-green/10 bg-white/70">
+            {POINTS.map((text, i) => (
+              <li key={i} className="flex gap-4 px-4 py-3 text-sm leading-relaxed text-brand-green/85 sm:text-base">
+                <span className="w-7 shrink-0 text-right font-serif text-lg leading-none text-brand-terracotta">
+                  {i + 1}
                 </span>
-                <span>{p.text}</span>
+                <span>{text}</span>
               </li>
             ))}
           </ol>
+
+          <section className="mt-8 rounded-2xl border border-brand-gold/40 bg-brand-cream p-5 text-sm leading-relaxed text-brand-green/85">
+            <h2 className="mb-2 font-serif text-xl text-brand-green">Важно</h2>
+            <p>
+              Схема носит ознакомительный характер и не заменяет консультацию врача. Перед первым
+              применением бальзама проверьте переносимость на небольшом участке кожи.
+            </p>
+          </section>
+
+          <Link
+            href="/catalog"
+            className="mt-8 inline-flex rounded-full bg-brand-green px-8 py-3 text-brand-beige transition-colors hover:bg-brand-green/90"
+          >
+            Выбрать бальзам
+          </Link>
         </div>
-      </div>
-
-      <section className="mt-16 bg-white/60 border border-brand-green/10 rounded-2xl p-6 sm:p-10">
-        <h2 className="font-serif text-2xl text-brand-green">
-          Как пользоваться
-        </h2>
-        <BotanicalDivider className="my-4" />
-        <ul className="space-y-3 text-brand-green/80 leading-relaxed">
-          <li>
-            Нанесите небольшое количество бальзама на нужную точку, следуя
-            рекомендациям производителя и показаниям на этикетке.
-          </li>
-          <li>
-            Массируйте точку круговыми движениями 1–2 минуты до ощущения тепла.
-          </li>
-          <li>
-            При первом применении сделайте тест на переносимость на сгибе локтя.
-          </li>
-          <li>
-            Схема носит ознакомительный характер и не заменяет консультацию
-            врача.
-          </li>
-        </ul>
-      </section>
-
-      <div className="mt-12 text-center">
-        <Link
-          href="/catalog"
-          className="inline-block px-8 py-3 rounded-full bg-brand-green text-brand-beige hover:bg-brand-green/90 transition-colors"
-        >
-          Выбрать бальзам в каталоге
-        </Link>
       </div>
     </div>
   );

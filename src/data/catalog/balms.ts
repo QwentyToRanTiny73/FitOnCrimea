@@ -1,63 +1,24 @@
-export type ProductCategory = "balm" | "soap" | "lip-balm";
+import type { Product } from "./types";
 
-export type ProductSubcategory =
-  | "face"
-  | "body"
-  | "hair"
-  | "joints"
-  | "respiratory"
-  | "repellent"
-  | "other";
+// Бальзамы 15 г. Названия, ключевые ингредиенты и показания — из брошюры бренда.
+// ВНИМАНИЕ: поля application и contraindications — черновые формулировки,
+// не из брошюры. Перед публичным запуском их должен проверить производитель.
 
-export interface Product {
-  id: string;
-  slug: string;
-  name: string;
-  tagline: string;
-  category: ProductCategory;
-  subcategory: ProductSubcategory;
-  price: number;
-  weight: string;
-  shortDescription: string;
-  effect: string;
-  composition: string[];
-  application: string;
-  contraindications: string;
-  ozonUrl: string;
-  images: string[];
-}
-
-export const CATEGORY_LABELS: Record<ProductCategory, string> = {
-  balm: "Бальзамы",
-  soap: "Мыло",
-  "lip-balm": "Бальзамы для губ",
-};
-
-export const SUBCATEGORY_LABELS: Record<ProductSubcategory, string> = {
-  face: "Для лица",
-  body: "Для тела",
-  hair: "Для волос",
-  joints: "Суставы и мышцы",
-  respiratory: "Дыхательные пути",
-  repellent: "Репелленты",
-  other: "Другое",
-};
+const BALM = { category: "balm", price: 400, weight: "15 г" } as const;
 
 const DEFAULT_APPLICATION =
   "Нанесите тонким слоем на чистую сухую кожу 2–3 раза в день. Слегка вотрите массирующими движениями.";
 const DEFAULT_CONTRAINDICATIONS =
   "Индивидуальная непереносимость компонентов. Перед первым применением рекомендуется тест на небольшом участке кожи.";
 
-export const products: Product[] = [
+export const balms: Product[] = [
   {
+    ...BALM,
     id: "01",
     slug: "krymskiy-spasatel",
     name: "Крымский спасатель",
     tagline: "Чайное дерево",
-    category: "balm",
     subcategory: "body",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Регенерирующий бальзам широкого спектра действия — помощник в домашней аптечке.",
     effect:
@@ -76,18 +37,15 @@ export const products: Product[] = [
     ],
     application: DEFAULT_APPLICATION,
     contraindications: DEFAULT_CONTRAINDICATIONS,
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "02",
     slug: "dlya-rosta-volos",
     name: "Для роста волос",
     tagline: "Ним и иланг-иланг",
-    category: "balm",
     subcategory: "hair",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Укрепление и стимуляция роста волос, нормализация микрофлоры кожи головы.",
     effect:
@@ -109,18 +67,15 @@ export const products: Product[] = [
     application:
       "Втирайте небольшое количество в кожу головы массажными движениями 2–3 раза в неделю. Можно оставить на ночь.",
     contraindications: DEFAULT_CONTRAINDICATIONS,
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "03",
     slug: "chistoe-lico",
     name: "Чистое лицо",
     tagline: "Календула и кайепут",
-    category: "balm",
     subcategory: "face",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Точечный уход против акне, комедонов и воспалений.",
     effect: "Уменьшает воспаления, подсушивает прыщи, выравнивает рельеф кожи.",
@@ -139,18 +94,15 @@ export const products: Product[] = [
     application:
       "Наносите тонким слоем точечно на очищенную кожу 1–2 раза в день.",
     contraindications: DEFAULT_CONTRAINDICATIONS,
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "04",
     slug: "ot-varikoza",
     name: "От варикоза",
     tagline: "Розмарин и софора",
-    category: "balm",
     subcategory: "body",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Поддержка венозного тонуса, уменьшение тяжести и отёчности в ногах.",
     effect:
@@ -173,18 +125,15 @@ export const products: Product[] = [
       "Наносите на чистую кожу ног снизу вверх по ходу вен 2 раза в день.",
     contraindications:
       "Острые тромбозы, открытые раны. Индивидуальная непереносимость компонентов.",
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "05",
     slug: "dlya-sosudov",
     name: "Бальзам от сосудов",
     tagline: "Иглица и виноград",
-    category: "balm",
     subcategory: "body",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Улучшает капиллярное кровообращение, помогает при «холодных руках и ногах».",
     effect:
@@ -205,20 +154,17 @@ export const products: Product[] = [
     ],
     application: DEFAULT_APPLICATION,
     contraindications: DEFAULT_CONTRAINDICATIONS,
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "06",
     slug: "zvezda-kryma",
     name: "Звезда Крыма",
     tagline: "Лавр и корица",
-    category: "balm",
     subcategory: "respiratory",
-    price: 400,
-    weight: "15 г",
     shortDescription:
-      "Крымский аналог «звёздочки» для простуды и головной боли.",
+      "Согревающий бальзам при простуде, головной боли и болях в суставах.",
     effect:
       "Респираторные заболевания, головная боль, боли в суставах, антисептик, отпугивает насекомых.",
     composition: [
@@ -240,18 +186,16 @@ export const products: Product[] = [
       "Наносите точечно на виски, крылья носа, грудь или больные суставы.",
     contraindications:
       "Детский возраст до 3 лет. Индивидуальная непереносимость компонентов.",
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "07",
     slug: "chabretsovaya-zvezdochka",
+    badges: ["hit"],
     name: "Чабрецовая звёздочка",
     tagline: "Чабрец",
-    category: "balm",
     subcategory: "respiratory",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Бестселлер бренда — помощь при первых признаках простуды.",
     effect: "Простуда, грипп, ангина, насморк, кашель.",
@@ -274,18 +218,15 @@ export const products: Product[] = [
       "Наносите на грудь, спину, виски и под нос при первых симптомах ОРВИ.",
     contraindications:
       "Детский возраст до 3 лет. Индивидуальная непереносимость компонентов.",
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "08",
     slug: "ot-kashlya",
     name: "Бальзам от кашля",
     tagline: "Анис и ромашка",
-    category: "balm",
     subcategory: "respiratory",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Облегчает кашель, поддерживает органы дыхания.",
     effect: "Кашель, бронхит, силикоз, туберкулёз, кашель курильщика.",
@@ -306,18 +247,15 @@ export const products: Product[] = [
       "Наносите на грудь и верхнюю часть спины 2–3 раза в день.",
     contraindications:
       "Детский возраст до 3 лет. Индивидуальная непереносимость компонентов.",
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "09",
     slug: "progrevayushchiy",
     name: "Крымский прогревающий",
     tagline: "Пихта и красный перец",
-    category: "balm",
     subcategory: "joints",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Глубокое прогревание суставов и мышц, разогрев перед нагрузкой.",
     effect:
@@ -338,18 +276,15 @@ export const products: Product[] = [
       "Нанесите тонким слоем, избегая слизистых. После применения вымойте руки.",
     contraindications:
       "Повреждённая кожа, аллергия на перец. Не наносить на лицо.",
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "10",
     slug: "zdorovye-sustavy",
     name: "Здоровые суставы",
     tagline: "Можжевельник",
-    category: "balm",
     subcategory: "joints",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Комплексная поддержка суставов и мягкое восстановление тканей.",
     effect: "Артрит, артроз, остеопороз, ускорение заживления тканей.",
@@ -367,18 +302,15 @@ export const products: Product[] = [
     ],
     application: DEFAULT_APPLICATION,
     contraindications: DEFAULT_CONTRAINDICATIONS,
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "11",
     slug: "ot-ozhogov",
     name: "Лавандовый от ожогов",
     tagline: "Лаванда",
-    category: "balm",
     subcategory: "body",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Успокаивает кожу после солнца и термических воздействий.",
     effect:
@@ -403,18 +335,15 @@ export const products: Product[] = [
       "Нанесите тонким слоем на повреждённый участок сразу после охлаждения кожи.",
     contraindications:
       "Открытые глубокие раны, ожоги 3–4 степени — обратитесь к врачу.",
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "12",
     slug: "mozolnyy",
     name: "Мозольный",
     tagline: "Лимонный эвкалипт",
-    category: "balm",
     subcategory: "body",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Размягчает мозоли и натоптыши, возвращает стопам гладкость.",
     effect: "Мозоли, натоптыши, огрубевшая кожа.",
@@ -434,18 +363,15 @@ export const products: Product[] = [
     application:
       "Наносите на распаренную кожу стоп на ночь, при необходимости под носок.",
     contraindications: DEFAULT_CONTRAINDICATIONS,
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "13",
     slug: "gladkie-pyatki",
     name: "Гладкие пятки",
     tagline: "Лимон и мята",
-    category: "balm",
     subcategory: "body",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Заживляет трещины и возвращает мягкость огрубевшей коже стоп.",
     effect: "Трещины пяток, огрубевшая кожа стоп.",
@@ -465,18 +391,15 @@ export const products: Product[] = [
     application:
       "Наносите на чистую кожу стоп 1–2 раза в день, особенно на ночь.",
     contraindications: DEFAULT_CONTRAINDICATIONS,
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "14",
     slug: "nogotok",
     name: "Ноготок",
     tagline: "Защитный воск",
-    category: "balm",
     subcategory: "body",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Укрепляющий воск для ногтей и кутикулы.",
     effect: "Защита, блеск и укрепление ногтевой пластины.",
@@ -492,18 +415,15 @@ export const products: Product[] = [
     application:
       "Полируйте ногтевую пластину, втирайте в кутикулу 2–3 раза в неделю.",
     contraindications: DEFAULT_CONTRAINDICATIONS,
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "15",
     slug: "obezbolivayushchiy",
     name: "Обезболивающий",
     tagline: "Грушанка и шалфей",
-    category: "balm",
     subcategory: "joints",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Снимает боль при нагрузках и хронических состояниях.",
     effect: "Ревматизм, остеохондроз, артрит, невралгия.",
@@ -520,18 +440,15 @@ export const products: Product[] = [
     ],
     application: DEFAULT_APPLICATION,
     contraindications: DEFAULT_CONTRAINDICATIONS,
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "16",
     slug: "ot-komarov",
     name: "От комаров",
     tagline: "Цитронелла и гвоздика",
-    category: "balm",
     subcategory: "repellent",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Натуральный репеллент на эфирных маслах, действует 2–3 часа.",
     effect: "Отпугивает комаров, мошек и других кровососущих насекомых.",
@@ -551,18 +468,15 @@ export const products: Product[] = [
       "Наносите на открытые участки кожи перед прогулкой. Обновляйте каждые 2–3 часа.",
     contraindications:
       "Детский возраст до 3 лет. Не наносить на лицо детям.",
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "17",
     slug: "uspokoitelnyy",
     name: "Успокоительный",
     tagline: "Герань и валериана",
-    category: "balm",
     subcategory: "other",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Мягкое расслабление и поддержка нервной системы перед сном.",
     effect: "Стресс, тревожность, бессонница, головная боль нервного характера.",
@@ -579,18 +493,15 @@ export const products: Product[] = [
     application:
       "Наносите на виски, запястья и область за ушами перед сном.",
     contraindications: DEFAULT_CONTRAINDICATIONS,
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "18",
     slug: "dlya-materi-i-rebenka",
     name: "Для матери и ребёнка",
     tagline: "Персик и ваниль",
-    category: "balm",
     subcategory: "body",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Мягкий уход за кожей при беременности и деликатный бальзам для детей.",
     effect:
@@ -612,18 +523,15 @@ export const products: Product[] = [
     application:
       "Наносите на сухую чистую кожу живота, бёдер и груди ежедневно.",
     contraindications: DEFAULT_CONTRAINDICATIONS,
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "19",
     slug: "ot-nasmorka",
     name: "От насморка",
     tagline: "Мирт и тимьян",
-    category: "balm",
     subcategory: "respiratory",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Облегчает дыхание при насморке и синуситах.",
     effect: "Гайморит, тонзиллит, ринит, аллергический насморк.",
@@ -643,18 +551,15 @@ export const products: Product[] = [
       "Наносите под нос, на крылья носа и область пазух 3–4 раза в день.",
     contraindications:
       "Детский возраст до 3 лет. Индивидуальная непереносимость.",
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "20",
     slug: "ot-allergii",
     name: "От аллергии",
     tagline: "Солодка и д-пантенол",
-    category: "balm",
     subcategory: "body",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Снимает зуд, шелушение и раздражение при аллергических реакциях.",
     effect:
@@ -670,18 +575,15 @@ export const products: Product[] = [
     ],
     application: DEFAULT_APPLICATION,
     contraindications: DEFAULT_CONTRAINDICATIONS,
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "21",
     slug: "belosnezhka",
     name: "Белоснежка",
     tagline: "Шелковица и жасмин",
-    category: "balm",
     subcategory: "face",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Осветляет пигментные пятна и выравнивает тон кожи.",
     effect: "Пигментация, веснушки, неровный тон кожи.",
@@ -697,18 +599,15 @@ export const products: Product[] = [
       "Наносите точечно на участки пигментации 1–2 раза в день. Используйте SPF днём.",
     contraindications:
       "Повышенная фоточувствительность. Не выходить на солнце сразу после нанесения.",
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "22",
     slug: "limonnik-i-roza",
     name: "Лимонник и роза",
     tagline: "Anti-age уход",
-    category: "balm",
     subcategory: "face",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Премиум-бальзам на настоящем масле крымской розы для зрелой кожи.",
     effect: "Возрастные изменения, морщины, потеря тургора кожи лица.",
@@ -725,18 +624,15 @@ export const products: Product[] = [
     application:
       "Наносите на очищенную кожу лица и шеи массажными движениями утром и вечером.",
     contraindications: DEFAULT_CONTRAINDICATIONS,
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "23",
     slug: "anticellyulitnyy",
     name: "Антицеллюлитный",
     tagline: "Грейпфрут и чёрный перец",
-    category: "balm",
     subcategory: "body",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Лимфодренажное действие, работа с «апельсиновой коркой».",
     effect: "Целлюлит, подкожный жировой слой, лимфодренаж.",
@@ -757,18 +653,15 @@ export const products: Product[] = [
       "Наносите на проблемные зоны массажными движениями снизу вверх после душа.",
     contraindications:
       "Беременность, повреждённая кожа, варикоз в острой стадии.",
-    ozonUrl: "#",
     images: [],
   },
   {
+    ...BALM,
     id: "24",
     slug: "ot-rastyazhek",
     name: "От растяжек",
     tagline: "Олива и колеус",
-    category: "balm",
     subcategory: "body",
-    price: 400,
-    weight: "15 г",
     shortDescription:
       "Профилактика растяжек при беременности и колебаниях веса.",
     effect:
@@ -788,17 +681,6 @@ export const products: Product[] = [
     application:
       "Наносите на кожу живота, бёдер, груди 1–2 раза в день на влажную кожу после душа.",
     contraindications: DEFAULT_CONTRAINDICATIONS,
-    ozonUrl: "#",
     images: [],
   },
 ];
-
-export const getProductBySlug = (slug: string): Product | undefined =>
-  products.find((product) => product.slug === slug);
-
-export const getProductsByCategory = (category: ProductCategory): Product[] =>
-  products.filter((product) => product.category === category);
-
-export const getProductsBySubcategory = (
-  subcategory: ProductSubcategory
-): Product[] => products.filter((product) => product.subcategory === subcategory);

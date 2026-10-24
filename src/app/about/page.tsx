@@ -1,109 +1,96 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  BotanicalBranch,
-  BotanicalDivider,
-  BotanicalWreath,
-} from "@/components/Botanical";
+import { BotanicalBranch } from "@/components/ui/Botanical";
+import { Reveal } from "@/components/ui/Reveal";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { CATEGORIES } from "@/config/categories";
+import { site } from "@/config/site";
+import { products } from "@/data/catalog";
 
 export const metadata: Metadata = {
   title: "О бренде",
-  description:
-    "«Фитон Крым» — линия натуральной косметики из Крыма с 2009 года. Фармакопейные принципы, крымское растительное сырьё, акварельная упаковка.",
+  description: `«${site.name}» — натуральная косметика на крымских травах с ${site.since} года: бальзамы, мыло ручной работы, бальзамы для губ.`,
 };
 
-const SECTIONS = [
+const PRINCIPLES = [
   {
-    title: "Сырьё",
-    text: "Эфирные масла, экстракты и инфузии — из растений, собранных и переработанных в Крыму: лаванда, чабрец, роза, хвоя, облепиха, шиповник, софора, гинкго.",
+    title: "Крымское сырьё",
+    text: "Эфирные масла и экстракты растений: чабрец, лаванда, роза, пихта, облепиха, шиповник, софора и другие.",
+    tone: "border-brand-forest/30",
   },
   {
-    title: "Рецептуры",
-    text: "Составы выверены по фармакопейным принципам: концентрации активных веществ, совместимость, воспроизводимость от партии к партии.",
+    title: "Фармакопейные рецептуры",
+    text: "Составы построены на классических фармакопейных принципах: активные растительные компоненты на основе пчелиного воска и масел.",
+    tone: "border-brand-sea/30",
   },
   {
-    title: "Производство",
-    text: "Бальзамы варятся малыми партиями, без консервантов массового производства. Упаковка — в стеклянные баночки 15 г с акварельной этикеткой.",
-  },
-  {
-    title: "Ассортимент",
-    text: "Более 20 бальзамов для лица, тела, суставов и дыхательной системы, мыло ручной работы, монастырская коллекция и бальзамы для губ.",
+    title: "Акварельная упаковка",
+    text: "Узнаваемый стиль бренда — авторские акварельные этикетки с крымскими пейзажами и травами.",
+    tone: "border-brand-poppy/30",
   },
 ];
 
 export default function AboutPage() {
-  return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
-      <header className="text-center mb-12">
-        <BotanicalWreath className="mx-auto h-16 text-brand-gold mb-4" />
-        <p className="uppercase tracking-[0.25em] text-xs text-brand-gold mb-4">
-          О бренде
-        </p>
-        <h1 className="font-serif text-4xl sm:text-5xl text-brand-green">
-          Herbarium Tauricum
-        </h1>
-        <BotanicalDivider className="my-6" />
-        <p className="max-w-2xl mx-auto text-brand-green/80 font-serif italic text-lg">
-          Травяная аптека Крыма на языке бальзамов — чабрец, лаванда, хвоя,
-          роза, облепиха и десятки других растений в узнаваемых баночках с
-          акварельной этикеткой.
-        </p>
-      </header>
+  const balmCount = products.filter((p) => p.category === "balm").length;
 
-      <section className="grid md:grid-cols-[auto_1fr] gap-8 items-start mb-20">
-        <BotanicalBranch className="h-[320px] mx-auto text-brand-green/50" />
-        <div>
-          <h2 className="font-serif text-3xl text-brand-green">
-            Линия с 2009 года
-          </h2>
-          <BotanicalDivider className="my-5" />
-          <p className="text-brand-green/80 leading-relaxed">
-            «Фитон Крым» — линия натуральной косметики, которая развивается с
-            2009 года. За основу взяты классические фармакопейные принципы:
-            выверенные концентрации активных веществ, воспроизводимость и
-            чистота рецептур.
+  return (
+    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-14">
+      <SectionHeading
+        as="h1"
+        eyebrow={`С ${site.since} года`}
+        title="Целебные бальзамы Крыма"
+        lead={<p className="font-serif text-lg italic">Шедевры натуральной косметики — травы, смолы и эфирные масла полуострова.</p>}
+      />
+
+      <section className="mb-14 grid items-center gap-8 md:grid-cols-[auto_1fr]">
+        <BotanicalBranch className="mx-auto hidden h-64 text-brand-green/40 md:block" />
+        <div className="space-y-4 leading-relaxed text-brand-green/85">
+          <p>
+            «{site.name}» выпускает натуральную косметику с {site.since} года. В основе линии —
+            бальзамы для ухода за кожей, суставами и дыхательной системой: каждый собран вокруг
+            одного-двух ключевых растений, которые вынесены в его подзаголовок.
           </p>
-          <p className="mt-4 text-brand-green/80 leading-relaxed">
-            Часть рецептур опирается на монастырскую традицию, часть создана
-            при работе с крымским сырьём. За годы линия выросла до более чем
-            двадцати бальзамов, мыла ручной работы и бальзамов для губ.
+          <p>
+            Сегодня в каталоге {balmCount} бальзамов, а также мыло ручной работы и
+            гигиенические бальзамы для губ.
           </p>
         </div>
       </section>
 
-      <section className="grid sm:grid-cols-2 gap-6 mb-20">
-        {SECTIONS.map((item) => (
-          <div
-            key={item.title}
-            className="p-6 bg-white/60 border border-brand-green/10 rounded-xl"
-          >
-            <h3 className="font-serif text-2xl text-brand-green">
-              {item.title}
-            </h3>
-            <p className="mt-3 text-brand-green/75 leading-relaxed">
-              {item.text}
-            </p>
-          </div>
+      <section className="mb-14 grid gap-4 sm:grid-cols-3">
+        {PRINCIPLES.map((p, i) => (
+          <Reveal key={p.title} delay={i * 100} className={`rounded-2xl border-t-4 ${p.tone} bg-white/70 p-6`}>
+            <h2 className="font-serif text-2xl text-brand-green">{p.title}</h2>
+            <p className="mt-2 text-sm leading-relaxed text-brand-green/80">{p.text}</p>
+          </Reveal>
         ))}
       </section>
 
-      <section className="text-center">
-        <h2 className="font-serif text-3xl text-brand-green">
-          Где купить
-        </h2>
-        <BotanicalDivider className="my-5" />
-        <p className="mt-4 max-w-xl mx-auto text-brand-green/75">
-          Основной канал продаж — магазин бренда на Ozon. Полный каталог
-          доступен на сайте, с каждой карточки можно перейти на маркетплейс
-          для оформления заказа.
-        </p>
+      <section className="mb-14">
+        <h2 className="mb-5 font-serif text-2xl text-brand-green sm:text-3xl">Линейки</h2>
+        <ul className="grid gap-4 sm:grid-cols-3">
+          {CATEGORIES.map((c) => (
+            <li key={c.key} className="rounded-2xl border border-brand-green/10 bg-white/60 p-5">
+              <h3 className="font-serif text-xl text-brand-green">{c.label}</h3>
+              <p className="mt-2 text-sm text-brand-green/80">{c.teaser}</p>
+              {c.details?.map((d) => (
+                <p key={d} className="mt-1 text-sm text-brand-green/70">
+                  {d}
+                </p>
+              ))}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <div className="text-center">
         <Link
           href="/catalog"
-          className="inline-block mt-8 px-8 py-3 rounded-full bg-brand-green text-brand-beige hover:bg-brand-green/90 transition-colors"
+          className="inline-flex rounded-full bg-brand-green px-8 py-3 text-brand-beige transition-colors hover:bg-brand-green/90"
         >
           Перейти в каталог
         </Link>
-      </section>
+      </div>
     </div>
   );
 }
