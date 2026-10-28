@@ -42,6 +42,9 @@ jobs:
         env:
           NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
           NEXT_PUBLIC_SITE_URL: ${{ steps.pages.outputs.base_url }}
+          # Куда админка публикует правки и фото
+          NEXT_PUBLIC_GITHUB_REPO: ${{ github.repository }}
+          NEXT_PUBLIC_GITHUB_BRANCH: ${{ github.ref_name }}
           NEXT_PUBLIC_ADMIN_LOGIN: ${{ vars.ADMIN_LOGIN || vars.ADMIN_NAME }}
           NEXT_PUBLIC_ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
           NEXT_PUBLIC_ADMIN_PASSWORD_HASH: ${{ secrets.ADMIN_PASSWORD_HASH }}

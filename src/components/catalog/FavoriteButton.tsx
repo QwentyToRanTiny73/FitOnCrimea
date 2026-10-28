@@ -18,7 +18,7 @@ export function FavoriteButton({ slug, className }: { slug: string; className?: 
         toggle(slug);
       }}
       className={cn(
-        "flex h-10 w-10 items-center justify-center rounded-full border border-brand-green/15 bg-white/90 transition-colors",
+        "flex h-10 w-10 items-center justify-center rounded-full border border-brand-amber/60 bg-brand-cream/90 transition-colors",
         active ? "text-brand-poppy" : "text-brand-green/50 hover:text-brand-poppy",
         className
       )}

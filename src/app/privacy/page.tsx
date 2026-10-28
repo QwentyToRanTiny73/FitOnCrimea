@@ -62,7 +62,7 @@ export default function PrivacyPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-14">
       <SectionHeading as="h1" eyebrow="Документ" title="Политика конфиденциальности" lead={`Редакция от ${revision}`} />
-      <div className="space-y-8 rounded-2xl border border-brand-green/10 bg-white/75 p-6 sm:p-10">
+      <div className="space-y-8 rounded-2xl border border-brand-amber/50 bg-brand-cream p-6 sm:p-10">
         {SECTIONS.map((s) => (
           <section key={s.title}>
             <h2 className="font-serif text-xl text-brand-green">{s.title}</h2>

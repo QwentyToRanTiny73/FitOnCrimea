@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { Inter, Old_Standard_TT, Ruslan_Display } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -9,11 +9,20 @@ import { site } from "@/config/site";
 import { absoluteUrl, assetUrl } from "@/lib/utils";
 import { Providers } from "@/providers";
 
-const cormorant = Cormorant_Garamond({
+// Классическая русская книжная антиква — для заголовков, как в брошюре.
+const serif = Old_Standard_TT({
   subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "700"],
   style: ["normal", "italic"],
-  variable: "--font-cormorant",
+  variable: "--font-serif",
+  display: "swap",
+});
+
+// Узкие «старорусские» буквы — для крупного заголовка, как на обложке.
+const display = Ruslan_Display({
+  subsets: ["latin", "cyrillic"],
+  weight: "400",
+  variable: "--font-display",
   display: "swap",
 });
 
@@ -63,7 +72,7 @@ const organization = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" className={`${cormorant.variable} ${inter.variable}`}>
+    <html lang="ru" className={`${serif.variable} ${display.variable} ${inter.variable}`}>
       <body className="flex min-h-screen flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] font-sans antialiased lg:pb-0">
         <a
           href="#main"

@@ -57,7 +57,7 @@ export default function MassagePointsPage() {
           href={assetUrl(IMAGE)}
           target="_blank"
           rel="noopener"
-          className="relative block aspect-[1400/2048] overflow-hidden rounded-2xl border border-brand-green/10 bg-white shadow-sm lg:sticky lg:top-24"
+          className="relative block aspect-[1400/2048] overflow-hidden rounded-2xl border border-brand-amber/50 bg-brand-cream shadow-sm lg:sticky lg:top-24"
         >
           <Image
             src={assetUrl(IMAGE)}
@@ -71,7 +71,7 @@ export default function MassagePointsPage() {
 
         <div>
           <h2 className="mb-4 font-serif text-2xl text-brand-green">Показания по точкам</h2>
-          <ol className="divide-y divide-brand-green/10 rounded-2xl border border-brand-green/10 bg-white/70">
+          <ol className="divide-y divide-brand-green/10 rounded-2xl border border-brand-amber/50 bg-brand-cream">
             {POINTS.map((text, i) => (
               <li key={i} className="flex gap-4 px-4 py-3 text-sm leading-relaxed text-brand-green/85 sm:text-base">
                 <span className="w-7 shrink-0 text-right font-serif text-lg leading-none text-brand-terracotta">
@@ -92,7 +92,7 @@ export default function MassagePointsPage() {
 
           <Link
             href="/catalog"
-            className="mt-8 inline-flex rounded-full bg-brand-green px-8 py-3 text-brand-beige transition-colors hover:bg-brand-green/90"
+            className="mt-8 inline-flex rounded-full bg-brand-green px-8 py-3 text-brand-cream transition-colors hover:bg-brand-green/90"
           >
             Выбрать бальзам
           </Link>

@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { BotanicalDivider } from "./Botanical";
 
+/** Заголовок раздела в духе брошюры: красная антиква и травяной разделитель. */
 export function SectionHeading({
   eyebrow,
   title,
@@ -20,24 +21,18 @@ export function SectionHeading({
   return (
     <header className={cn(centered && "text-center", "mb-8 sm:mb-10", className)}>
       {eyebrow && (
-        <p className="uppercase tracking-[0.25em] text-[11px] sm:text-xs text-brand-gold mb-2">
-          {eyebrow}
-        </p>
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.25em] text-brand-gold sm:text-xs">{eyebrow}</p>
       )}
       <Tag
         className={cn(
-          "font-serif text-brand-green leading-tight",
-          Tag === "h1" ? "text-3xl sm:text-5xl" : "text-2xl sm:text-4xl"
+          "title-crimson font-serif font-bold uppercase leading-tight tracking-wide",
+          Tag === "h1" ? "text-2xl sm:text-4xl" : "text-xl sm:text-3xl"
         )}
       >
         {title}
       </Tag>
-      <BotanicalDivider className={cn("my-5", !centered && "justify-start")} />
-      {lead && (
-        <div className={cn("text-brand-green/80 leading-relaxed", centered && "max-w-2xl mx-auto")}>
-          {lead}
-        </div>
-      )}
+      <BotanicalDivider className={cn("my-4 text-brand-gold", !centered && "justify-start")} />
+      {lead && <div className={cn("leading-relaxed text-brand-green/85", centered && "mx-auto max-w-2xl")}>{lead}</div>}
     </header>
   );
 }

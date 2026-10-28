@@ -7,6 +7,8 @@ export interface User {
   name: string;
   role: UserRole;
   createdAt: string;
+  /** Как выполнен вход: аккаунт сайта или ключ GitHub (администратор). */
+  via?: "local" | "github";
 }
 
 /**

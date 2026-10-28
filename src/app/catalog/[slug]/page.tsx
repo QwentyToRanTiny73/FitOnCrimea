@@ -70,7 +70,7 @@ export default function ProductPage({ params }: PageProps) {
         }}
       />
 
-      <nav aria-label="Хлебные крошки" className="mb-6 text-sm text-brand-green/60">
+      <nav aria-label="Хлебные крошки" className="mb-6 text-sm text-brand-green/70">
         <ol className="flex flex-wrap items-center gap-1.5">
           <li>
             <Link href="/" className="hover:text-brand-green">Главная</Link>
@@ -92,7 +92,7 @@ export default function ProductPage({ params }: PageProps) {
 
       {related.length > 0 && (
         <section className="mt-16" aria-labelledby="related">
-          <h2 id="related" className="mb-6 font-serif text-2xl text-brand-green sm:text-3xl">
+          <h2 id="related" className="title-crimson mb-6 font-serif text-xl font-bold uppercase sm:text-2xl">
             Ещё в разделе «{meta.label}»
           </h2>
           <ul className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">

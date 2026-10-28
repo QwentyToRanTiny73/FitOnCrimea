@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { MAIN_NAV, site } from "@/config/site";
 import { useAuth, useFavorites } from "@/providers";
 import { cn } from "@/lib/utils";
+import { Emblem } from "@/components/ui/Brochure";
 import { HeartIcon, MenuIcon, SearchIcon, UserIcon } from "@/components/ui/Icons";
 
 export function Header() {
@@ -19,10 +20,13 @@ export function Header() {
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-brand-green/10 bg-brand-beige/90 backdrop-blur supports-[backdrop-filter]:bg-brand-beige/75">
+    <header className="sticky top-0 z-40 border-b-2 border-double border-brand-amber/70 bg-brand-cream/90 backdrop-blur supports-[backdrop-filter]:bg-brand-cream/80">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:h-16 sm:px-6">
-        <Link href="/" className="font-serif text-2xl tracking-wide text-brand-green sm:text-3xl" aria-label={`${site.name} — на главную`}>
-          Фитон <span className="text-brand-gold">Крым</span>
+        <Link href="/" className="flex items-center gap-2" aria-label={`${site.name} — на главную`}>
+          <Emblem className="h-9 w-9 shrink-0 sm:h-10 sm:w-10" />
+          <span className="font-display text-xl uppercase leading-none tracking-wide text-brand-poppy [text-shadow:0_1px_0_#5a2420] sm:text-2xl">
+            Фитон Крым
+          </span>
         </Link>
 
         <nav aria-label="Основное меню" className="hidden items-center gap-7 lg:flex">
@@ -33,7 +37,7 @@ export function Header() {
               aria-current={isActive(item.href) ? "page" : undefined}
               className={cn(
                 "text-sm transition-colors hover:text-brand-green",
-                isActive(item.href) ? "text-brand-green underline decoration-brand-gold underline-offset-8" : "text-brand-green/75"
+                isActive(item.href) ? "text-brand-crimson underline decoration-brand-amber decoration-2 underline-offset-8" : "text-brand-green/80"
               )}
             >
               {item.label}
@@ -79,11 +83,11 @@ export function Header() {
       </div>
 
       {open && (
-        <nav id="mobile-menu" aria-label="Меню" className="border-t border-brand-green/10 bg-brand-beige lg:hidden">
-          <ul className="mx-auto flex max-w-6xl flex-col px-4 py-2">
+        <nav id="mobile-menu" aria-label="Меню" className="border-t border-brand-amber/40 bg-brand-cream lg:hidden">
+          <ul className="mx-auto flex max-w-6xl flex-col divide-y divide-brand-amber/30 px-4 py-2">
             {[...MAIN_NAV, { href: "/privacy", label: "Политика конфиденциальности" }].map((item) => (
               <li key={item.href}>
-                <Link href={item.href} className="block py-3 text-base text-brand-green/90 hover:text-brand-green">
+                <Link href={item.href} className="block py-3 font-serif text-lg text-brand-green hover:text-brand-crimson">
                   {item.label}
                 </Link>
               </li>

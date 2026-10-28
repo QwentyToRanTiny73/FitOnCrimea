@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { StampImage } from "@/components/ui/Brochure";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { STAMPS } from "@/config/brochure";
 import { site } from "@/config/site";
 
 export const metadata: Metadata = {
@@ -42,23 +44,26 @@ export default function ContactsPage() {
   ];
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-14">
+    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-14">
       <SectionHeading as="h1" eyebrow="Контакты" title="Связаться с нами" />
+      <div className="grid items-start gap-8 md:grid-cols-[1fr_auto]">
       <ul className="grid gap-4 sm:grid-cols-2">
         {cards.map((c) => (
-          <li key={c.label} className={`rounded-2xl border-l-4 ${c.tone} bg-white/70 p-5`}>
+          <li key={c.label} className={`paper-page rounded-xl border-l-4 ${c.tone} p-5`}>
             <p className="mb-1 text-xs uppercase tracking-widest text-brand-gold">{c.label}</p>
             {c.href ? (
-              <a href={c.href} className="font-serif text-xl text-brand-green hover:underline">
+              <a href={c.href} className="break-words font-serif text-xl font-bold text-brand-green hover:underline">
                 {c.value}
               </a>
             ) : (
-              <p className="font-serif text-xl text-brand-green">{c.value}</p>
+              <p className="font-serif text-xl font-bold text-brand-green">{c.value}</p>
             )}
             <p className="mt-1 text-sm text-brand-green/70">{c.note}</p>
           </li>
         ))}
       </ul>
+      <StampImage {...STAMPS.car} className="mx-auto w-44 rotate-2 sm:w-52" sizes="220px" />
+      </div>
     </div>
   );
 }

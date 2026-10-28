@@ -14,16 +14,29 @@ type Sort = "popular" | "name";
 
 const norm = (s: string) => s.toLowerCase().replace(/ё/g, "е");
 
+// Грубая основа слова: «суставы» → «суста», чтобы находить «суставах», «суставов».
+const stem = (w: string) => (w.length >= 6 ? w.slice(0, -2) : w);
+
 function matches(p: Product, q: string): boolean {
   if (!q) return true;
-  const hay = norm(
-    [p.name, p.tagline, p.shortDescription, p.effect, ...p.composition].join(" ")
-  );
+  const hay = norm([p.name, p.tagline, p.shortDescription, p.effect, p.description ?? "", ...p.composition].join(" "));
   return norm(q)
     .split(/\s+/)
     .filter(Boolean)
-    .every((word) => hay.includes(word));
+    .every((word) => hay.includes(stem(word)));
 }
+
+/** Частые запросы покупателей: одно касание вместо набора текста. */
+const QUICK: Array<{ label: string; q?: string; cat?: ProductSubcategory }> = [
+  { label: "Кашель", q: "кашель" },
+  { label: "Насморк", q: "насморк" },
+  { label: "Суставы", cat: "joints" },
+  { label: "Ожоги", q: "ожог" },
+  { label: "Акне", q: "акне" },
+  { label: "Трещины пяток", q: "трещины" },
+  { label: "Комары", q: "комар" },
+  { label: "Сон и стресс", cat: "other" },
+];
 
 export function CatalogView() {
   const router = useRouter();
@@ -91,8 +104,8 @@ export function CatalogView() {
               className={cn(
                 "shrink-0 rounded-full border px-4 py-2 text-sm transition-colors",
                 active
-                  ? "border-brand-green bg-brand-green text-brand-beige"
-                  : "border-brand-green/20 bg-white/70 text-brand-green hover:border-brand-gold"
+                  ? "border-brand-green bg-brand-green text-brand-cream"
+                  : "border-brand-amber bg-brand-cream text-brand-green hover:border-brand-crimson"
               )}
             >
               {c.label}
@@ -118,8 +131,8 @@ export function CatalogView() {
                   setQuery(e.target.value);
                   update({ q: e.target.value.trim() || null });
                 }}
-                placeholder="Название, растение или показание: «кашель», «лаванда»…"
-                className="w-full rounded-full border border-brand-green/20 bg-white py-2.5 pl-10 pr-4 text-sm focus:border-brand-gold focus:outline-none"
+                placeholder="Симптом, растение или название"
+                className="w-full rounded-full border-2 border-brand-amber bg-brand-cream py-2.5 pl-10 pr-4 text-base focus:border-brand-crimson focus:outline-none sm:text-sm"
               />
             </label>
             <label className="flex items-center gap-2 text-sm text-brand-green/80">
@@ -127,12 +140,29 @@ export function CatalogView() {
               <select
                 value={sort}
                 onChange={(e) => update({ sort: e.target.value === "name" ? "name" : null })}
-                className="rounded-full border border-brand-green/20 bg-white px-3 py-2 text-sm focus:border-brand-gold focus:outline-none"
+                className="rounded-full border-2 border-brand-amber bg-brand-cream px-3 py-2 text-sm focus:border-brand-crimson focus:outline-none"
               >
                 <option value="popular">Сначала хиты</option>
                 <option value="name">По названию</option>
               </select>
             </label>
+          </div>
+
+          <div className="mb-4 flex flex-wrap items-center gap-2 text-sm">
+            <span className="text-brand-green/70">Часто ищут:</span>
+            {QUICK.map((item) => (
+              <button
+                key={item.label}
+                type="button"
+                onClick={() => {
+                  setQuery(item.q ?? "");
+                  update({ q: item.q ?? null, cat: item.cat ?? null });
+                }}
+                className="rounded-full border border-dashed border-brand-crimson/40 px-3 py-1 text-brand-crimson transition-colors hover:border-solid hover:bg-brand-cream"
+              >
+                {item.label}
+              </button>
+            ))}
           </div>
 
           <div className="-mx-4 mb-6 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
@@ -154,7 +184,7 @@ export function CatalogView() {
           </p>
 
           {visible.length === 0 ? (
-            <div className="rounded-2xl border border-brand-green/10 bg-white/60 py-16 text-center">
+            <div className="paper-page rounded-2xl py-16 text-center">
               <p className="text-brand-green/75">Ничего не нашлось.</p>
               <button
                 type="button"
@@ -200,13 +230,13 @@ function Chip({
       className={cn(
         "flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm transition-colors",
         active
-          ? "border-brand-green bg-brand-green text-brand-beige"
-          : "border-brand-green/20 bg-white/60 text-brand-green hover:border-brand-gold"
+          ? "border-brand-green bg-brand-green text-brand-cream"
+          : "border-brand-amber bg-brand-cream text-brand-green hover:border-brand-crimson"
       )}
     >
       {dot && <span className={cn("h-2 w-2 rounded-full", dot)} />}
       {label}
-      <span className={cn("text-xs", active ? "text-brand-beige/70" : "text-brand-green/50")}>{count}</span>
+      <span className={cn("text-xs", active ? "text-brand-cream/70" : "text-brand-green/50")}>{count}</span>
     </button>
   );
 }
