@@ -62,11 +62,8 @@ const STEPS = [
 ];
 
 export default function HomePage() {
-  const years = new Date().getFullYear() - site.since;
   const numbers = [
-    { value: `${years}+`, label: "лет бренду" },
     { value: String(visibleProducts().length), label: "бальзамов в каталоге" },
-    { value: "30", label: "сортов мыла" },
     { value: "26", label: "точек массажа на схеме" },
   ];
 
@@ -203,7 +200,7 @@ export default function HomePage() {
       {/* 7. Бренд в цифрах */}
       <section className="relative bg-brand-green text-brand-cream">
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-          <ul className="grid grid-cols-2 gap-6 text-center lg:grid-cols-4">
+          <ul className="mx-auto grid max-w-2xl grid-cols-2 gap-6 text-center">
             {numbers.map((n) => (
               <li key={n.label}>
                 <span className="block font-display text-4xl text-brand-amber sm:text-5xl">{n.value}</span>
