@@ -32,6 +32,23 @@ jobs:
       - id: pages
         uses: actions/configure-pages@v5
 
+      # Публиковать сайт должен только этот workflow. Если в Settings → Pages → Source
+      # остался «Deploy from a branch», GitHub при каждом пуше параллельно собирает
+      # README (запуск «pages build and deployment»), и сайт 1–2 минуты показывает его.
+      # Шаг ничего не ломает: только предупреждает на странице запуска.
+      - name: Check Pages source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          type=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages" | jq -r '.build_type // empty' || true)
+          echo "Источник GitHub Pages: ${type:-не удалось узнать}"
+          if [ "$type" = "legacy" ]; then
+            msg="Settings → Pages → Source стоит «Deploy from a branch». Переключите на «GitHub Actions», иначе при каждом обновлении сайт 1–2 минуты показывает README."
+            echo "::warning title=Неверный источник GitHub Pages::$msg"
+            { echo "### Неверный источник GitHub Pages"; echo "$msg"; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Install
         run: npm ci
 
