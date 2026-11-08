@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MAIN_NAV, site } from "@/config/site";
-import { useAuth, useFavorites } from "@/providers";
+import { useAdmin, useAuth, useFavorites } from "@/providers";
 import { cn } from "@/lib/utils";
 import { Emblem } from "@/components/ui/Brochure";
 import { HeartIcon, MenuIcon, SearchIcon, UserIcon } from "@/components/ui/Icons";
@@ -12,7 +12,9 @@ import { HeartIcon, MenuIcon, SearchIcon, UserIcon } from "@/components/ui/Icons
 export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const { user, isAdmin } = useAuth();
+  const { user } = useAuth();
+  // Ссылка на кабинет видна только администратору, который уже вошёл.
+  const { isAdmin } = useAdmin();
   const { count } = useFavorites();
 
   useEffect(() => setOpen(false), [pathname]);
@@ -45,7 +47,7 @@ export function Header() {
           ))}
           {isAdmin && (
             <Link href="/admin" className="text-sm text-brand-poppy hover:text-brand-poppy/80">
-              Админка
+              Кабинет администратора
             </Link>
           )}
         </nav>
@@ -95,7 +97,7 @@ export function Header() {
             {isAdmin && (
               <li>
                 <Link href="/admin" className="block py-3 text-base text-brand-poppy">
-                  Админка
+                  Кабинет администратора
                 </Link>
               </li>
             )}

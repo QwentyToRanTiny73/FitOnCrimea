@@ -1,15 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CategoryGrid } from "@/components/catalog/CategoryGrid";
+import { HomeBanners } from "@/components/design/HomeBanners";
+import { SlotImage, SlotStamp } from "@/components/design/SlotImage";
 import { ProductCard } from "@/components/catalog/ProductCard";
-import { Meadow, Ribbon, StampImage } from "@/components/ui/Brochure";
+import { Meadow, Ribbon } from "@/components/ui/Brochure";
 import { ArrowIcon } from "@/components/ui/Icons";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { BROCHURE_INTRO, COVER, SLOGAN, STAMPS } from "@/config/brochure";
+import { BROCHURE_INTRO, SLOGAN } from "@/config/brochure";
 import { CATEGORIES } from "@/config/categories";
 import { site } from "@/config/site";
 import { getProductBySlug, visibleProducts, type Product } from "@/data/catalog";
+import type { DesignSlotKey } from "@/data/design";
 import { assetUrl, cn } from "@/lib/utils";
 
 const pick = (slugs: string[]): Product[] =>
@@ -55,6 +58,8 @@ const COLLECTIONS = [
   },
 ];
 
+const LINE_SLOT: Record<string, DesignSlotKey> = { balm: "line-balm", soap: "line-soap", "lip-balm": "line-lip-balm" };
+
 const STEPS = [
   { n: "1", title: "Выберите бальзам", text: "По задаче, растению или симптому — в каталоге есть поиск." },
   { n: "2", title: "Изучите карточку", text: "Показания, состав, способ применения и противопоказания." },
@@ -99,11 +104,8 @@ export default function HomePage() {
             </div>
           </div>
           <div className="order-1 md:order-2">
-            <Image
-              src={assetUrl(COVER.src)}
-              alt={COVER.alt}
-              width={COVER.width}
-              height={COVER.height}
+            <SlotImage
+              slot="cover"
               priority
               sizes="(max-width: 768px) 80vw, 520px"
               className="mx-auto h-auto w-64 sm:w-80 md:w-full md:max-w-[520px]"
@@ -127,6 +129,9 @@ export default function HomePage() {
           ))}
         </ul>
       </section>
+
+      {/* Баннеры из кабинета («Оформление»); без баннеров блока нет */}
+      <HomeBanners />
 
       {/* 3. Подбор по задаче */}
       <section id="podbor" className="mx-auto max-w-4xl scroll-mt-20 px-4 py-12 sm:px-6 sm:py-16">
@@ -168,8 +173,8 @@ export default function HomePage() {
             </Link>
           </div>
           <div className="relative mx-auto flex max-w-md flex-col items-center gap-0">
-            <StampImage {...STAMPS.swallowNest} className="w-64 -rotate-3 sm:w-72" />
-            <StampImage {...STAMPS.lighthouse} className="-mt-6 ml-24 w-56 rotate-2 sm:w-64" />
+            <SlotStamp slot="stamp-swallow-nest" className="w-64 -rotate-3 sm:w-72" />
+            <SlotStamp slot="stamp-lighthouse" className="-mt-6 ml-24 w-56 rotate-2 sm:w-64" />
           </div>
         </div>
       </section>
@@ -221,11 +226,9 @@ export default function HomePage() {
                 href={c.key === "balm" ? "/catalog" : `/catalog?type=${c.key}`}
                 className="paper-page group flex h-full flex-col overflow-hidden rounded-xl transition-shadow hover:shadow-md"
               >
-                {c.image && (
-                  <div className="relative aspect-[4/3] border-b border-brand-amber/40 bg-brand-cream">
-                    <Image src={assetUrl(c.image.src)} alt={c.image.alt} fill sizes="(max-width: 640px) 90vw, 360px" className="object-contain p-2" />
-                  </div>
-                )}
+                <div className="relative aspect-[4/3] border-b border-brand-amber/40 bg-brand-cream">
+                  <SlotImage slot={LINE_SLOT[c.key]} fill sizes="(max-width: 640px) 90vw, 360px" className="object-contain p-2" />
+                </div>
                 <div className="flex flex-1 flex-col p-5">
                   <h3 className="title-crimson font-serif text-xl font-bold uppercase">{c.label}</h3>
                   <p className="mt-2 flex-1 text-sm text-brand-green/85">{c.teaser}</p>

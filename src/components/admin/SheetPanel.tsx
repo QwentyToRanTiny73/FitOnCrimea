@@ -40,7 +40,7 @@ export function SheetPanel() {
   return (
     <div className="space-y-6">
       <section className="paper-page rounded-2xl p-5 sm:p-6">
-        <h2 className="title-crimson font-serif text-xl font-bold uppercase">Таблица Excel</h2>
+        <h2 className="title-crimson font-serif text-xl font-bold uppercase">Выгрузка и загрузка</h2>
         <ol className="mt-3 list-decimal space-y-1.5 pl-5 text-sm leading-relaxed text-brand-green/90">
           <li>Скачайте таблицу — в ней все товары с текущими данными.</li>
           <li>Откройте в Excel, поменяйте цены, ссылки Ozon, тексты. Новый товар — новая строка с названием, разделом и ценой.</li>

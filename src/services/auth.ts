@@ -1,14 +1,13 @@
 import { readJSON, removeKey, writeJSON } from "./storage";
 
-export type UserRole = "admin" | "user";
+/** Покупатель. Администратор входит отдельно (services/admin-vault.ts). */
+export type UserRole = "user";
 
 export interface User {
   email: string;
   name: string;
   role: UserRole;
   createdAt: string;
-  /** Как выполнен вход: аккаунт сайта или ключ GitHub (администратор). */
-  via?: "local" | "github";
 }
 
 /**
@@ -38,32 +37,14 @@ async function sha256(text: string): Promise<string> {
     .join("");
 }
 
-const seed = {
-  login: process.env.NEXT_PUBLIC_ADMIN_LOGIN?.trim(),
-  email: process.env.NEXT_PUBLIC_ADMIN_EMAIL?.trim().toLowerCase(),
-  hash: process.env.NEXT_PUBLIC_ADMIN_PASSWORD_HASH?.trim().toLowerCase(),
-};
-const seedConfigured = Boolean(seed.hash && (seed.login || seed.email));
-
 function loadUsers(): Record<string, StoredUser> {
-  const users = readJSON<Record<string, StoredUser>>(USERS_KEY, {});
-  if (seedConfigured) {
-    const email = seed.email || `${seed.login!.toLowerCase()}@admin.local`;
-    // Seed-админ всегда соответствует текущим переменным сборки.
-    users[email] = {
-      email,
-      name: seed.login || email.split("@")[0],
-      role: "admin",
-      createdAt: users[email]?.createdAt ?? new Date().toISOString(),
-      passwordHash: seed.hash!,
-    };
-  }
-  return users;
+  return readJSON<Record<string, StoredUser>>(USERS_KEY, {});
 }
 
 function toPublic({ passwordHash: _hash, ...user }: StoredUser): User {
   void _hash;
-  return user;
+  // Прежние версии давали роль admin первому зарегистрированному — теперь все аккаунты покупательские.
+  return { ...user, role: "user" };
 }
 
 function persistSession(user: User | null) {
@@ -73,8 +54,7 @@ function persistSession(user: User | null) {
 
 /**
  * Демо-реализация: данные живут только в браузере посетителя.
- * Роль admin получает только seed-аккаунт из переменных сборки.
- * Без них (локальная разработка) админом становится первый зарегистрированный.
+ * Для настоящих аккаунтов нужен сервер (Supabase, Яндекс ID и т. п.).
  */
 export const localAuthService: AuthService = {
   mode: "local-demo",
@@ -92,17 +72,10 @@ export const localAuthService: AuthService = {
     if (password.length < 8) throw new Error("Пароль должен быть не короче 8 символов.");
     const users = loadUsers();
     if (users[normalized]) throw new Error("Пользователь с таким email уже зарегистрирован.");
-    if (seed.login && name.trim().toLowerCase() === seed.login.toLowerCase()) {
-      throw new Error("Это имя зарезервировано. Выберите другое.");
-    }
-    const devFirstAdmin =
-      !seedConfigured &&
-      process.env.NODE_ENV !== "production" &&
-      !Object.values(users).some((u) => u.role === "admin");
     const stored: StoredUser = {
       email: normalized,
       name: name.trim() || normalized.split("@")[0],
-      role: devFirstAdmin ? "admin" : "user",
+      role: "user",
       createdAt: new Date().toISOString(),
       passwordHash: await sha256(password),
     };
@@ -117,10 +90,7 @@ export const localAuthService: AuthService = {
   async login({ identifier, password }) {
     const id = identifier.trim().toLowerCase();
     const users = loadUsers();
-    const byName = Object.values(users)
-      .filter((u) => u.name.toLowerCase() === id)
-      .sort((a, b) => (a.role === "admin" ? -1 : 0) - (b.role === "admin" ? -1 : 0));
-    const stored = users[id] ?? byName[0];
+    const stored = users[id] ?? Object.values(users).find((u) => u.name.toLowerCase() === id);
     if (!stored) throw new Error("Пользователь не найден.");
     if ((await sha256(password)) !== stored.passwordHash) throw new Error("Неверный пароль.");
     const user = toPublic(stored);

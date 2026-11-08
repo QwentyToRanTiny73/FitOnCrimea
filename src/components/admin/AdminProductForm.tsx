@@ -6,7 +6,7 @@ import { SLUG_RE, slugify } from "@/data/catalog/sanitize";
 import { products as publishedProducts } from "@/data/catalog";
 import type { Product, ProductBadge, ProductCategory, ProductOverride, ProductSubcategory } from "@/data/catalog";
 import { useCatalog } from "@/providers";
-import { fileToCompressedDataURL } from "@/services/image-upload";
+import { ACCEPT_ATTR, prepareImage } from "@/services/image-upload";
 import { assetUrl, cn, formatPrice } from "@/lib/utils";
 import { Field, Notice, inputClass, primaryButton, secondaryButton } from "@/components/ui/Form";
 
@@ -137,14 +137,14 @@ export function AdminProductForm({
   };
 
   async function addFiles(files: File[]) {
-    const images = files.filter((f) => f.type.startsWith("image/"));
+    const images = files.filter((f) => f.type.startsWith("image/") || /\.(jpe?g|png|webp)$/i.test(f.name));
     if (!images.length) {
-      setStatus({ tone: "error", text: "Перетащите файлы изображений (JPEG, PNG, WebP)." });
+      setStatus({ tone: "error", text: "Нужны файлы JPEG или PNG." });
       return;
     }
     setBusy(true);
     try {
-      const urls = await Promise.all(images.map((f) => fileToCompressedDataURL(f, 1000, 0.82)));
+      const urls = (await Promise.all(images.map((f) => prepareImage(f, { maxSide: 1200, quality: 0.85 })))).map((i) => i.dataUrl);
       setForm((f) => ({ ...f, images: [...f.images, ...urls] }));
       setStatus({ tone: "ok", text: `Добавлено фото: ${urls.length}. Не забудьте «Сохранить».` });
     } catch (err) {
@@ -184,7 +184,7 @@ export function AdminProductForm({
       const changes = diff(data, current);
       if (!Object.keys(changes).length) return setStatus({ tone: "ok", text: "Изменений нет." });
       setOverride(base.slug, changes);
-      setStatus({ tone: "ok", text: "Сохранено в черновик — изменения уже видны в этом браузере. Опубликуйте их во вкладке «Публикация»." });
+      setStatus({ tone: "ok", text: "Сохранено в черновик — изменения уже видны в этом браузере. Опубликуйте их в разделе «Публикация»." });
     } catch (err) {
       setStatus({ tone: "error", text: err instanceof Error ? err.message : "Не удалось сохранить." });
     }
@@ -325,7 +325,7 @@ export function AdminProductForm({
           )}
           <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:text-left">
             <label className={cn(primaryButton, "cursor-pointer py-2 text-sm")}>
-              <input type="file" accept="image/*" multiple className="sr-only" disabled={busy} onChange={(e) => { void addFiles(Array.from(e.target.files ?? [])); e.target.value = ""; }} />
+              <input type="file" accept={ACCEPT_ATTR} multiple className="sr-only" disabled={busy} onChange={(e) => { void addFiles(Array.from(e.target.files ?? [])); e.target.value = ""; }} />
               {busy ? "Обработка…" : "Выбрать фото с компьютера"}
             </label>
             <span className="text-sm text-brand-green/70">или перетащите файлы сюда</span>

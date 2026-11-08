@@ -3,12 +3,10 @@
 import { FormEvent, Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { GitHubLogin } from "@/components/admin/GitHubLogin";
 import { DemoNotice } from "@/components/ui/DemoNotice";
 import { Field, Notice, inputClass, primaryButton } from "@/components/ui/Form";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useAuth } from "@/providers";
-import { cn } from "@/lib/utils";
 
 /** Разрешаем возврат только на внутренние страницы. */
 const safeNext = (v: string | null) => (v && v.startsWith("/") && !v.startsWith("//") ? v : null);
@@ -51,51 +49,20 @@ function CustomerForm({ next }: { next: string }) {
   );
 }
 
-function LoginTabs() {
-  const router = useRouter();
+function LoginForm() {
   const params = useSearchParams();
   const next = safeNext(params.get("next"));
-  const [tab, setTab] = useState<"customer" | "admin">(next?.startsWith("/admin") || params.get("as") === "admin" ? "admin" : "customer");
-
   return (
-    <>
-      <div role="tablist" aria-label="Кто входит" className="mb-4 grid grid-cols-2 gap-2">
-        {(
-          [
-            ["customer", "Покупатель"],
-            ["admin", "Администратор"],
-          ] as const
-        ).map(([key, label]) => (
-          <button
-            key={key}
-            role="tab"
-            type="button"
-            aria-selected={tab === key}
-            onClick={() => setTab(key)}
-            className={cn(
-              "rounded-full border-2 px-4 py-2 font-semibold transition-colors",
-              tab === key ? "border-brand-green bg-brand-green text-brand-cream" : "border-brand-amber bg-brand-cream text-brand-green"
-            )}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-      {tab === "customer" ? (
-        <div className="space-y-4">
-          <DemoNotice />
-          <CustomerForm next={next ?? "/account"} />
-          <p className="text-center text-sm text-brand-green/80">
-            Нет аккаунта?{" "}
-            <Link href="/account/register" className="text-brand-green underline decoration-brand-amber underline-offset-4">
-              Зарегистрироваться
-            </Link>
-          </p>
-        </div>
-      ) : (
-        <GitHubLogin onDone={() => router.push(next ?? "/admin")} />
-      )}
-    </>
+    <div className="space-y-4">
+      <DemoNotice />
+      <CustomerForm next={next ?? "/account"} />
+      <p className="text-center text-sm text-brand-green/80">
+        Нет аккаунта?{" "}
+        <Link href="/account/register" className="text-brand-green underline decoration-brand-amber underline-offset-4">
+          Зарегистрироваться
+        </Link>
+      </p>
+    </div>
   );
 }
 
@@ -104,7 +71,7 @@ export default function LoginPage() {
     <div className="mx-auto max-w-md px-4 py-8 sm:py-14">
       <SectionHeading as="h1" eyebrow="Личный кабинет" title="Вход" />
       <Suspense fallback={<div className="h-72" />}>
-        <LoginTabs />
+        <LoginForm />
       </Suspense>
     </div>
   );

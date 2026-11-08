@@ -29,6 +29,18 @@ const must = [
 ];
 for (const f of must) if (!existsSync(join(OUT, f))) errors.push(`нет файла out/${f}`);
 
+// Картинки оформления из кабинета (src/data/design/overrides.json) должны лежать в out/.
+try {
+  const design = JSON.parse(readFileSync("src/data/design/overrides.json", "utf8"));
+  const paths = [
+    ...Object.values(design.images ?? {}).map((i) => i?.src),
+    ...(design.banners ?? []).map((b) => b?.image?.src),
+  ].filter((p) => typeof p === "string" && p.startsWith("/"));
+  for (const p of paths) if (!existsSync(join(OUT, p))) errors.push(`оформление ссылается на отсутствующий файл ${p}`);
+} catch (e) {
+  errors.push(`src/data/design/overrides.json не читается: ${e.message}`);
+}
+
 const productPages = existsSync(join(OUT, "catalog"))
   ? readdirSync(join(OUT, "catalog"), { withFileTypes: true }).filter((d) => d.isDirectory()).length
   : 0;

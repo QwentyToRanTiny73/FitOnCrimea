@@ -1,12 +1,12 @@
-import Image from "next/image";
 import Link from "next/link";
 import { SUBCATEGORIES } from "@/config/categories";
 import type { ProductSubcategory } from "@/data/catalog";
-import { assetUrl, cn } from "@/lib/utils";
+import { SlotImage } from "@/components/design/SlotImage";
+import { cn } from "@/lib/utils";
 
 /**
  * Иконки разделов — круглые медальоны с акварельными растениями из брошюры
- * (public/brochure/icons/<key>.webp, 240×240). Растение подобрано по бальзаму раздела:
+ * (public/brochure/icons/<key>.webp, 240×240). Заменяются в кабинете: «Оформление». Растение подобрано по бальзаму раздела:
  * дыхание — лавр и розмарин («Звезда Крыма»), суставы — пихта и красный перец,
  * тело — лаванда, лицо — календула, волосы — иланг-иланг, от насекомых — гвоздика,
  * успокоение — герань и валериана, точки массажа — фрагмент схемы точек.
@@ -34,10 +34,10 @@ export function CategoryGrid({ className }: { className?: string }) {
               t.ring
             )}
           >
-            <Image
-              src={assetUrl(`/brochure/icons/${t.key}.webp`)}
-              alt=""
+            <SlotImage
+              slot={`icon-${t.key}`}
               fill
+              decorative
               sizes="(min-width: 640px) 112px, 72px"
               className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
