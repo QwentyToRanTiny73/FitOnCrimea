@@ -132,6 +132,9 @@ Workflow `.github/workflows/nextjs.yml` срабатывает при пуше �
 собирает сайт, проверяет результат (`scripts/verify-export.mjs`) и публикует `out/`.
 
 Настройка репозитория (один раз): **Settings → Pages → Source: GitHub Actions.**
+Если после обновления сайт на минуту-две показывает README, источник стоит «Deploy from a branch»:
+в Actions у каждого пуша тогда два запуска — наш «Deploy to GitHub Pages» и чужой «pages build and
+deployment». Сборка в этом случае выводит предупреждение «Неверный источник GitHub Pages».
 Секреты для входа не нужны: логин и пароль администратор задаёт сам в `/admin`.
 Если в Settings → Secrets остались `ADMIN_PASSWORD_HASH`, `ADMIN_EMAIL`, переменная `ADMIN_LOGIN` —
 их можно удалить, сайт их больше не читает.
