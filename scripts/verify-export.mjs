@@ -23,6 +23,9 @@ const must = [
   "brochure/cover-wreath.webp",
   "brochure/stamp-swallow-nest.webp",
   "products/limonnik-i-roza-brochure.webp",
+  "products/krymskiy-spasatel-brochure.webp",
+  "brochure/icons/respiratory.webp",
+  "brochure/icons/massage.webp",
 ];
 for (const f of must) if (!existsSync(join(OUT, f))) errors.push(`нет файла out/${f}`);
 

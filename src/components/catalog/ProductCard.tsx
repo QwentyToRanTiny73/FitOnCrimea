@@ -5,6 +5,7 @@ import { BADGE_LABELS, subcategoryMeta } from "@/config/categories";
 import type { Product } from "@/data/catalog";
 import { useProduct } from "@/providers";
 import { cn, formatPrice } from "@/lib/utils";
+import { Flourish } from "@/components/ui/Brochure";
 import { FavoriteButton } from "./FavoriteButton";
 import { ProductImage } from "./ProductImage";
 
@@ -21,11 +22,12 @@ export function ProductCard({ product: base, priority }: { product: Product; pri
           priority={priority}
           className="aspect-square transition-transform duration-500 group-hover:scale-[1.02]"
         />
-        <div className="flex flex-1 flex-col border-t border-brand-amber/40 p-3 sm:p-4">
+        <div className="flex flex-1 flex-col border-t border-brand-amber/40 p-3 text-center sm:p-4">
           <p className="title-crimson mb-1 font-serif text-[11px] font-bold uppercase leading-tight tracking-wide sm:text-xs">
             {product.tagline}
           </p>
-          <h3 className="font-serif text-lg leading-tight text-brand-green sm:text-xl">{product.name}</h3>
+          <h3 className="font-serif text-lg font-bold leading-tight text-brand-green sm:text-xl">{product.name}</h3>
+          <Flourish className="mx-auto mt-1.5 w-20 sm:w-24" />
           <p className="mt-1.5 line-clamp-2 flex-1 text-xs text-brand-green/75 sm:text-sm">{product.shortDescription}</p>
           <div className="mt-3 flex items-center justify-between gap-2">
             <span className="text-base font-semibold text-brand-green sm:text-lg">{formatPrice(product.price)}</span>
