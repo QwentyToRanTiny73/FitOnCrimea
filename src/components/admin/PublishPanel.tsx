@@ -4,12 +4,12 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { site } from "@/config/site";
 import { products as publishedProducts } from "@/data/catalog";
 import { sanitizeOverrideMap } from "@/data/catalog/sanitize";
-import { useAuth, useCatalog } from "@/providers";
-import { lastPublish, plural, publishDrafts, type PublishResult } from "@/services/publisher";
+import { slotByKey, type DesignSlotKey } from "@/data/design";
+import { useAdmin, useCatalog, useDesign } from "@/providers";
+import { lastPublish, plural, publishChanges, type PublishResult } from "@/services/publisher";
 import { usedKilobytes } from "@/services/storage";
 import { cn } from "@/lib/utils";
 import { Notice, primaryButton, secondaryButton } from "@/components/ui/Form";
-import { GitHubLogin } from "./GitHubLogin";
 
 const FIELD_LABELS: Record<string, string> = {
   name: "название",
@@ -32,9 +32,10 @@ const FIELD_LABELS: Record<string, string> = {
   pairsWith: "подборка",
 };
 
-export function PublishPanel() {
+export function PublishPanel({ onAccount }: { onAccount: () => void }) {
   const { overrides, allProducts, replaceAll } = useCatalog();
-  const { adminToken, user } = useAuth();
+  const { draft: design, hasDraft: hasDesign, replaceDraft } = useDesign();
+  const { token: adminToken, keyStatus, keyProblem } = useAdmin();
   const [log, setLog] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,9 +45,11 @@ export function PublishPanel() {
   useEffect(() => {
     setResult(lastPublish());
     setUsedKb(usedKilobytes());
-  }, [overrides]);
+  }, [overrides, design]);
 
   const drafts = Object.entries(overrides);
+  const designEntries = Object.entries(design.images ?? {}) as Array<[DesignSlotKey, unknown]>;
+  const total = drafts.length + designEntries.length + (design.banners ? 1 : 0);
   const repoUrl = `https://github.com/${site.repo.owner}/${site.repo.repo}`;
 
   async function publish() {
@@ -55,7 +58,7 @@ export function PublishPanel() {
     setError(null);
     setLog([]);
     try {
-      const r = await publishDrafts(adminToken, site.repo, overrides, (step) => setLog((l) => [...l, step]));
+      const r = await publishChanges(adminToken, site.repo, { catalog: overrides, design }, (step) => setLog((l) => [...l, step]));
       setResult(r);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Не удалось опубликовать.");
@@ -91,9 +94,26 @@ export function PublishPanel() {
     <div className="space-y-6">
       <section className="paper-page rounded-2xl p-5 sm:p-6">
         <h2 className="title-crimson font-serif text-xl font-bold uppercase">Черновики</h2>
-        {drafts.length === 0 ? (
-          <p className="mt-2 text-brand-green/80">Неопубликованных изменений нет.</p>
-        ) : (
+        {total === 0 && <p className="mt-2 text-brand-green/80">Неопубликованных изменений нет.</p>}
+        {hasDesign && (
+          <ul className="mt-3 divide-y divide-brand-amber/40">
+            {designEntries.map(([key, img]) => (
+              <li key={key} className="flex flex-wrap items-baseline justify-between gap-2 py-2.5">
+                <span className="font-serif font-bold text-brand-green">Оформление: {slotByKey(key).label}</span>
+                <span className="text-sm text-brand-green/75">{img === null ? "вернуть исходную" : "новая картинка"}</span>
+              </li>
+            ))}
+            {design.banners && (
+              <li className="flex flex-wrap items-baseline justify-between gap-2 py-2.5">
+                <span className="font-serif font-bold text-brand-green">Оформление: баннеры на главной</span>
+                <span className="text-sm text-brand-green/75">
+                  {design.banners.length} {plural(design.banners.length, "баннер", "баннера", "баннеров")}
+                </span>
+              </li>
+            )}
+          </ul>
+        )}
+        {drafts.length > 0 && (
           <ul className="mt-3 divide-y divide-brand-amber/40">
             {drafts.map(([slug, patch]) => {
               const p = allProducts.find((x) => x.slug === slug);
@@ -123,19 +143,17 @@ export function PublishPanel() {
           за 2–3 минуты. Предыдущая версия остаётся в истории GitHub — её всегда можно вернуть.
         </p>
 
-        {!adminToken ? (
+        {keyStatus === "invalid" ? (
           <div className="mt-4 space-y-3">
-            <Notice tone="info">
-              {user ? `Вы вошли как ${user.name}, но без ключа GitHub. ` : ""}Для публикации войдите ключом GitHub.
-            </Notice>
-            <GitHubLogin />
+            <Notice tone="error">{keyProblem ?? "Ключ GitHub не работает."} Замените ключ — черновики сохранятся.</Notice>
+            <button type="button" onClick={onAccount} className={cn(secondaryButton, "py-2 text-sm")}>
+              Заменить ключ GitHub
+            </button>
           </div>
         ) : (
           <div className="mt-4 space-y-3">
-            <button type="button" onClick={publish} disabled={busy || drafts.length === 0} className={cn(primaryButton, "w-full sm:w-auto")}>
-              {busy
-                ? "Публикую…"
-                : `Опубликовать ${drafts.length} ${plural(drafts.length, "изменение", "изменения", "изменений")}`}
+            <button type="button" onClick={publish} disabled={busy || total === 0 || !adminToken} className={cn(primaryButton, "w-full sm:w-auto")}>
+              {busy ? "Публикую…" : `Опубликовать ${total} ${plural(total, "изменение", "изменения", "изменений")}`}
             </button>
             {log.length > 0 && (
               <ol className="space-y-1 text-sm text-brand-green/85" aria-live="polite">
@@ -154,7 +172,8 @@ export function PublishPanel() {
         {result && (
           <div className="mt-4 rounded-xl border-2 border-dashed border-brand-forest/40 bg-brand-forest/5 p-4 text-sm text-brand-green">
             <p>
-              Последняя публикация: {new Date(result.at).toLocaleString("ru-RU")} — товаров {result.products}, фото {result.photos}.
+              Последняя публикация: {new Date(result.at).toLocaleString("ru-RU")} — товаров {result.products}, оформление{" "}
+              {result.design ?? 0}, картинок {result.photos}.
             </p>
             <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
               <a href={result.commitUrl} target="_blank" rel="noopener noreferrer" className="underline decoration-brand-amber underline-offset-2">
@@ -169,8 +188,12 @@ export function PublishPanel() {
         )}
         <button
           type="button"
-          disabled={drafts.length === 0}
-          onClick={() => window.confirm("Удалить все черновики в этом браузере? Опубликованное на сайте не изменится.") && replaceAll({})}
+          disabled={total === 0}
+          onClick={() => {
+            if (!window.confirm("Удалить все черновики в этом браузере? Опубликованное на сайте не изменится.")) return;
+            replaceAll({});
+            replaceDraft({});
+          }}
           className={cn(secondaryButton, "mt-4 py-2 text-sm text-brand-poppy")}
         >
           Очистить черновики
@@ -178,7 +201,7 @@ export function PublishPanel() {
       </section>
 
       <details className="paper-page rounded-2xl p-5 sm:p-6">
-        <summary className="cursor-pointer font-serif font-bold text-brand-green">Без GitHub-ключа: файл черновиков</summary>
+        <summary className="cursor-pointer font-serif font-bold text-brand-green">Файл черновиков товаров</summary>
         <p className="mt-3 text-sm text-brand-green/80">
           Можно перенести черновики на другой компьютер или отдать разработчику: скачать файл и загрузить его там.
         </p>

@@ -4,7 +4,7 @@
  * Источники:
  * - indications — дословно из брошюры бренда;
  * - where, label, dots — положение на рисунке (координаты в % от ширины и высоты картинки);
- * - balms — бальзамы, в показаниях которых есть то же состояние (совпадение слов, не рекомендация брошюры);
+ * - balms — бальзамы, в показаниях которых (по брошюре) есть то же состояние; это не рекомендация брошюры;
  * - TECHNIQUE и ZONE_TIPS — общие правила точечного массажа, в брошюре их НЕТ.
  *   Перед публичным запуском согласовать со специалистом.
  */
@@ -51,7 +51,7 @@ export const MASSAGE_POINTS: MassagePoint[] = [
   { n: 20, indications: "онемение рук, слабость", where: "Кисть руки", zone: "arms", labels: [[13, 17.8]], dots: [[10.5, 19.5]] },
   { n: 21, indications: "шейный остеохондроз", where: "Плечо, сверху", zone: "neck", labels: [[21.9, 12.4]], dots: [[24.8, 14.3]], balms: ["progrevayushchiy", "obezbolivayushchiy"] },
   { n: 22, indications: "избыточный вес", where: "Плечо, наружная сторона", zone: "arms", labels: [[39.8, 23.9]], dots: [[37.3, 17.5]], balms: ["anticellyulitnyy"] },
-  { n: 23, indications: "межрёберная невралгия", where: "Спина, на уровне лопаток", zone: "back", labels: [[57.8, 21.9]], dots: [[46.4, 16.7], [51, 16.9]], balms: ["obezbolivayushchiy", "zdorovye-sustavy"] },
+  { n: 23, indications: "межрёберная невралгия", where: "Спина, на уровне лопаток", zone: "back", labels: [[57.8, 21.9]], dots: [[46.4, 16.7], [51, 16.9]], balms: ["zdorovye-sustavy"] },
   { n: 24, indications: "радикулит", where: "Середина спины", zone: "back", labels: [[40.3, 26.9]], dots: [[48.9, 23.5]], balms: ["progrevayushchiy"] },
   { n: 25, indications: "боль в локтевом суставе", where: "Локоть", zone: "arms", labels: [[59.1, 24.4]], dots: [[66, 22.1]], balms: ["zvezda-kryma", "progrevayushchiy"] },
   { n: 26, indications: "атеросклероз", where: "Макушка", zone: "head", labels: [[58.9, 4]], dots: [[55.7, 4.6]], caution: "doctor" },

@@ -7,11 +7,12 @@ import { ProductCard } from "@/components/catalog/ProductCard";
 import { DemoNotice } from "@/components/ui/DemoNotice";
 import { secondaryButton } from "@/components/ui/Form";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { useAuth, useCatalog, useFavorites } from "@/providers";
+import { useAdmin, useAuth, useCatalog, useFavorites } from "@/providers";
 
 export default function AccountPage() {
   const router = useRouter();
-  const { user, loading, isAdmin, logout } = useAuth();
+  const { user, loading, logout } = useAuth();
+  const { isAdmin } = useAdmin();
   const { favorites } = useFavorites();
   const { products } = useCatalog();
 
@@ -38,7 +39,7 @@ export default function AccountPage() {
         >
           <span>
             <span className="title-crimson block font-serif text-xl font-bold uppercase">Кабинет администратора</span>
-            <span className="text-sm text-brand-green/80">Товары, фото, публикация на сайт, таблица Excel</span>
+            <span className="text-sm text-brand-green/80">Товары, оформление, публикация на сайт</span>
           </span>
           <span className="text-2xl text-brand-crimson" aria-hidden="true">→</span>
         </Link>

@@ -1,25 +1,34 @@
 import { sanitizeOverrideMap } from "@/data/catalog/sanitize";
 import type { OverrideMap, ProductOverride } from "@/data/catalog/types";
+import { isDraftEmpty, sanitizeDesign } from "@/data/design/sanitize";
+import type { DesignDraft, DesignImage, DesignOverrides } from "@/data/design/types";
 import { commitFiles, readTextFile, utf8ToBase64, type CommitFile, type RepoRef } from "./github";
 import { readJSON, writeJSON } from "./storage";
 
 /**
- * Публикация черновиков админки на сайт: фото из браузера сохраняются
- * в public/products/, правки — в src/data/catalog/overrides.json.
- * Всё уходит одним коммитом; GitHub Actions пересобирает сайт за 2–3 минуты.
+ * Публикация черновиков кабинета на сайт одним коммитом:
+ *   товары     — фото в public/products/, правки в src/data/catalog/overrides.json;
+ *   оформление — картинки в public/design/, описание в src/data/design/overrides.json.
+ * GitHub Actions пересобирает сайт за 2–3 минуты. Каждая публикация — коммит,
+ * любую прежнюю версию можно вернуть в истории репозитория.
  */
 
 export const OVERRIDES_PATH = "src/data/catalog/overrides.json";
+export const DESIGN_PATH = "src/data/design/overrides.json";
 const PHOTO_DIR = "public/products";
+const DESIGN_DIR = "public/design";
 
 export interface PublishResult {
   commitUrl: string;
   products: number;
+  design: number;
+  /** Сколько новых файлов картинок ушло в репозиторий. */
   photos: number;
   at: string;
 }
 
 const EXT: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
+const DATA_URL = /^data:(image\/[a-z+]+);base64,(.+)$/;
 
 async function shortHash(text: string): Promise<string> {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -33,58 +42,83 @@ function compact(o: ProductOverride): ProductOverride {
   return Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined)) as ProductOverride;
 }
 
-export async function publishDrafts(
+async function readJsonFile(token: string, repo: RepoRef, path: string): Promise<unknown> {
+  const text = await readTextFile(token, repo, path);
+  try {
+    return text ? JSON.parse(text) : {};
+  } catch {
+    throw new Error(`Файл ${path} в репозитории повреждён — исправьте его вручную.`);
+  }
+}
+
+/** data: → файл в репозитории; путь на сайте возвращается. */
+async function storeDataUrl(src: string, dir: string, publicDir: string, prefix: string, files: CommitFile[]): Promise<string> {
+  const m = DATA_URL.exec(src);
+  if (!m) return src;
+  const name = `${prefix}-${await shortHash(m[2])}.${EXT[m[1]] ?? "jpg"}`;
+  if (!files.some((f) => f.path === `${dir}/${name}`)) files.push({ path: `${dir}/${name}`, base64: m[2] });
+  return `/${publicDir}/${name}`;
+}
+
+export async function publishChanges(
   token: string,
   repo: RepoRef,
-  drafts: OverrideMap,
+  changes: { catalog: OverrideMap; design: DesignDraft },
   onStep: (text: string) => void = () => {}
 ): Promise<PublishResult> {
-  const slugs = Object.keys(drafts);
-  if (!slugs.length) throw new Error("Нет изменений для публикации.");
-
-  onStep("Читаю опубликованный каталог…");
-  const remoteText = await readTextFile(token, repo, OVERRIDES_PATH);
-  let remote: OverrideMap = {};
-  try {
-    remote = sanitizeOverrideMap(remoteText ? JSON.parse(remoteText) : {});
-  } catch {
-    throw new Error(`Файл ${OVERRIDES_PATH} в репозитории повреждён — исправьте его вручную.`);
-  }
+  const slugs = Object.keys(changes.catalog);
+  const designItems = Object.keys(changes.design.images ?? {}).length + (changes.design.banners ? 1 : 0);
+  if (!slugs.length && isDraftEmpty(changes.design)) throw new Error("Нет изменений для публикации.");
 
   const files: CommitFile[] = [];
-  const merged: OverrideMap = { ...remote };
 
-  for (const slug of slugs) {
-    const patch = { ...drafts[slug] };
-    if (patch.images) {
-      const out: string[] = [];
-      for (const src of patch.images) {
-        const m = /^data:(image\/[a-z+]+);base64,(.+)$/.exec(src);
-        if (!m) {
-          out.push(src);
-          continue;
-        }
-        const name = `${slug}-${await shortHash(m[2])}.${EXT[m[1]] ?? "jpg"}`;
-        if (!files.some((f) => f.path.endsWith(`/${name}`))) files.push({ path: `${PHOTO_DIR}/${name}`, base64: m[2] });
-        out.push(`/products/${name}`);
+  if (slugs.length) {
+    onStep("Читаю опубликованный каталог…");
+    const remote: OverrideMap = sanitizeOverrideMap(await readJsonFile(token, repo, OVERRIDES_PATH));
+    const merged: OverrideMap = { ...remote };
+    for (const slug of slugs) {
+      const patch = { ...changes.catalog[slug] };
+      if (patch.images) {
+        const out: string[] = [];
+        for (const src of patch.images) out.push(await storeDataUrl(src, PHOTO_DIR, "products", slug, files));
+        patch.images = out;
       }
-      patch.images = out;
+      merged[slug] = compact({ ...remote[slug], ...patch });
     }
-    merged[slug] = compact({ ...remote[slug], ...patch });
+    files.push({ path: OVERRIDES_PATH, base64: utf8ToBase64(JSON.stringify(merged, null, 2) + "\n") });
   }
 
-  const photos = files.length;
-  files.push({ path: OVERRIDES_PATH, base64: utf8ToBase64(JSON.stringify(merged, null, 2) + "\n") });
+  if (!isDraftEmpty(changes.design)) {
+    onStep("Читаю опубликованное оформление…");
+    const remote: DesignOverrides = sanitizeDesign(await readJsonFile(token, repo, DESIGN_PATH));
+    const images: NonNullable<DesignOverrides["images"]> = { ...remote.images };
+    for (const [key, img] of Object.entries(changes.design.images ?? {}) as Array<[keyof typeof images, DesignImage | null]>) {
+      if (img === null) delete images[key];
+      else images[key] = { ...img, src: await storeDataUrl(img.src, DESIGN_DIR, "design", key, files) };
+    }
+    let banners = remote.banners;
+    if (changes.design.banners) {
+      banners = [];
+      for (const b of changes.design.banners) {
+        banners.push({ ...b, image: { ...b.image, src: await storeDataUrl(b.image.src, DESIGN_DIR, "design", `banner-${b.id}`, files) } });
+      }
+    }
+    const next: DesignOverrides = {};
+    if (Object.keys(images).length) next.images = images;
+    if (banners?.length) next.banners = banners;
+    files.push({ path: DESIGN_PATH, base64: utf8ToBase64(JSON.stringify(next, null, 2) + "\n") });
+  }
 
-  onStep(photos ? `Загружаю фото (${photos}) и данные…` : "Сохраняю данные…");
-  const commit = await commitFiles(
-    token,
-    repo,
-    files,
-    `Каталог: правки из админки (${slugs.length} ${plural(slugs.length, "товар", "товара", "товаров")}${photos ? `, фото: ${photos}` : ""})`
-  );
+  const photos = files.filter((f) => f.path.startsWith("public/")).length;
+  onStep(photos ? `Загружаю картинки (${photos}) и данные…` : "Сохраняю данные…");
+  const parts = [
+    slugs.length ? `товары: ${slugs.length}` : "",
+    designItems ? `оформление: ${designItems}` : "",
+    photos ? `картинки: ${photos}` : "",
+  ].filter(Boolean);
+  const commit = await commitFiles(token, repo, files, `Сайт: правки из кабинета (${parts.join(", ")})`);
 
-  const result: PublishResult = { commitUrl: commit.url, products: slugs.length, photos, at: new Date().toISOString() };
+  const result: PublishResult = { commitUrl: commit.url, products: slugs.length, design: designItems, photos, at: new Date().toISOString() };
   writeJSON("last-publish", result);
   onStep("Готово. Сайт обновится через 2–3 минуты.");
   return result;

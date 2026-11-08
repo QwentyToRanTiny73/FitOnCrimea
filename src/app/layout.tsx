@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
+import { StorefrontOnly } from "@/components/layout/StorefrontOnly";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { site } from "@/config/site";
 import { absoluteUrl, assetUrl } from "@/lib/utils";
@@ -82,12 +83,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         <JsonLd data={organization} />
         <Providers>
-          <Header />
+          <StorefrontOnly>
+            <Header />
+          </StorefrontOnly>
           <main id="main" className="flex-1">
             {children}
           </main>
-          <Footer />
-          <MobileTabBar />
+          <StorefrontOnly>
+            <Footer />
+            <MobileTabBar />
+          </StorefrontOnly>
         </Providers>
       </body>
     </html>

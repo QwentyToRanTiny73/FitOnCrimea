@@ -45,9 +45,6 @@ jobs:
           # Куда админка публикует правки и фото
           NEXT_PUBLIC_GITHUB_REPO: ${{ github.repository }}
           NEXT_PUBLIC_GITHUB_BRANCH: ${{ github.ref_name }}
-          NEXT_PUBLIC_ADMIN_LOGIN: ${{ vars.ADMIN_LOGIN || vars.ADMIN_NAME }}
-          NEXT_PUBLIC_ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
-          NEXT_PUBLIC_ADMIN_PASSWORD_HASH: ${{ secrets.ADMIN_PASSWORD_HASH }}
         run: npm run build
 
       - name: Verify static output

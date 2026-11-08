@@ -9,8 +9,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "verify": "node scripts/verify-export.mjs",
-    "check": "npm run lint && npm run typecheck && npm run build && npm run verify",
-    "hash-password": "node scripts/hash-password.mjs"
+    "check": "npm run lint && npm run typecheck && npm run build && npm run verify"
   },
   "dependencies": {
     "clsx": "^2.1.1",

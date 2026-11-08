@@ -8,8 +8,20 @@ import { hasOzonLink, productSubtitle, type Product } from "@/data/catalog";
 import { useProduct } from "@/providers";
 import { cn, formatPrice } from "@/lib/utils";
 import { Accordion } from "@/components/ui/Accordion";
+import { Flourish } from "@/components/ui/Brochure";
 import { FavoriteButton } from "./FavoriteButton";
 import { ProductImage } from "./ProductImage";
+
+/** Состав одним абзацем, как в брошюре: «Эфирное масло …, д-пантенол, … .» */
+function compositionText(items: string[]) {
+  const text = items
+    .map((x, i) => {
+      const s = x.replace(/^Эф\. масло/, "эфирное масло");
+      return i === 0 ? s.charAt(0).toUpperCase() + s.slice(1) : s.charAt(0).toLowerCase() + s.slice(1);
+    })
+    .join(", ");
+  return text ? `${text}.` : "";
+}
 
 function BuyButton({ product, className }: { product: Product; className?: string }) {
   const base = "inline-flex items-center justify-center rounded-full px-8 py-3.5 text-center font-semibold transition-colors";
@@ -46,7 +58,7 @@ export function ProductDetail({ base }: { base: Product }) {
         </p>
       )}
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-14">
-        <div>
+        <div className="lg:sticky lg:top-24 lg:self-start">
           <div className="relative">
             <ProductImage
               product={product}
@@ -97,7 +109,8 @@ export function ProductDetail({ base }: { base: Product }) {
             <p className="title-crimson font-serif text-lg font-bold uppercase tracking-wide sm:text-xl">{product.tagline}</p>
           )}
           <h1 className="mt-1 font-serif text-3xl font-bold leading-tight text-brand-green sm:text-5xl">{product.name}</h1>
-          <p className="mt-2 font-serif text-lg italic text-brand-green/80">{productSubtitle(product)}</p>
+          <p className="mt-2 font-serif text-lg font-bold text-brand-green/85 sm:text-xl">{productSubtitle(product)}</p>
+          <Flourish className="mt-3 w-32" />
 
           <div className="mt-5 flex items-baseline gap-3">
             <span className="font-serif text-3xl font-bold text-brand-green">{formatPrice(product.price)}</span>
@@ -112,7 +125,9 @@ export function ProductDetail({ base }: { base: Product }) {
           <div className="paper-page mt-8 rounded-xl px-5">
             {product.description && (
               <Accordion title="Описание" defaultOpen>
-                {product.description}
+                <p className="hyphens-auto sm:text-justify font-serif text-[1.05rem] leading-relaxed text-brand-green/90">
+                  {product.description}
+                </p>
               </Accordion>
             )}
             <Accordion title="Показания" defaultOpen={!product.description}>
@@ -120,13 +135,7 @@ export function ProductDetail({ base }: { base: Product }) {
             </Accordion>
             <Accordion title="Способ применения">{product.application}</Accordion>
             <Accordion title="Состав">
-              <ul className="flex flex-wrap gap-2">
-                {product.composition.map((item) => (
-                  <li key={item} className="rounded-full border border-brand-amber/60 bg-brand-cream px-3 py-1 text-sm">
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              <p className="hyphens-auto font-serif leading-relaxed sm:text-justify">{compositionText(product.composition)}</p>
             </Accordion>
             <Accordion title="Противопоказания">{product.contraindications}</Accordion>
             <Accordion title="Хранение" className="border-b-0">

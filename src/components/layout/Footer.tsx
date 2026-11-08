@@ -72,9 +72,6 @@ export function Footer() {
             <Link href="/privacy" className="hover:text-brand-amber">
               Политика конфиденциальности
             </Link>
-            <Link href="/admin" className="hover:text-brand-amber">
-              Администратору
-            </Link>
           </span>
         </div>
       </div>

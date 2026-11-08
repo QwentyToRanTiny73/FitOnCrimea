@@ -106,6 +106,17 @@ export function Meadow({ className, tone = "text-brand-amber" }: { className?: s
   );
 }
 
+/** Разделитель, как под заголовками брошюры: тонкая линия, ромб и два листка. */
+export function Flourish({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 120 12" aria-hidden="true" className={cn("h-3 w-28 text-brand-gold/70", className)}>
+      <path d="M2 6h42M76 6h42" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+      <path d="M60 1.5 64.5 6 60 10.5 55.5 6Z" fill="currentColor" />
+      <path d="M53 6c-2.6-3.2-5.6-3.8-8-3 1.2 2.3 4 3.6 8 3Zm14 0c2.6-3.2 5.6-3.8 8-3-1.2 2.3-4 3.6-8 3Z" fill="currentColor" />
+    </svg>
+  );
+}
+
 /** Акварель в рамке почтовой марки. */
 export function StampImage({
   src,
