@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { CategoryGrid } from "@/components/catalog/CategoryGrid";
@@ -14,6 +15,9 @@ import { site } from "@/config/site";
 import { getProductBySlug, visibleProducts, type Product } from "@/data/catalog";
 import type { DesignSlotKey } from "@/data/design";
 import { assetUrl, cn } from "@/lib/utils";
+import { pageMeta } from "@/lib/seo";
+
+export const metadata: Metadata = pageMeta({ description: site.description, path: "/" });
 
 const pick = (slugs: string[]): Product[] =>
   slugs.map((slug) => getProductBySlug(slug)).filter((p): p is Product => Boolean(p) && !p?.hidden);

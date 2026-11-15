@@ -1,11 +1,12 @@
 # Фитон Крым — памятка для Claude
 
 ## Деплой: GitHub Pages, только статика
-- `next.config.mjs`: `output: "export"`, `images.unoptimized`, `basePath` из `NEXT_PUBLIC_BASE_PATH`.
+- `next.config.mjs`: `output: "export"`, свой загрузчик картинок (`src/lib/image-loader.ts`), `basePath` из `NEXT_PUBLIC_BASE_PATH`.
 - Нельзя: API routes, middleware, серверные actions, `cookies()/headers()`, динамические
   страницы без `generateStaticParams` (+ `dynamicParams = false`).
-- Локальные картинки — только через `assetUrl()` (`src/lib/utils.ts`): next/image с
-  `unoptimized` не добавляет basePath сам.
+- Локальные картинки — только через `assetUrl()` (`src/lib/utils.ts`) и next/image. Уменьшенные копии
+  (`public/_img/`, не в git) делает `scripts/optimize-images.mjs` перед сборкой; новые папки с картинками
+  добавлять в этот скрипт и в `LOCAL` загрузчика.
 - Один workflow: `.github/workflows/nextjs.yml`. Второй не добавлять — будут двойные деплои.
 
 ## Перед коммитом
@@ -26,6 +27,7 @@
 - Ссылок на кабинет на витрине нет (видна только вошедшему администратору).
 
 ## Код
+- Аккаунтов покупателей нет (нужен сервер в России по 152-ФЗ). Не возвращать демо-регистрацию.
 - Категории, цвета, подписи — только в `src/config/categories.ts`; контакты и меню — `src/config/site.ts`.
 - Внешние сервисы — через интерфейсы в `src/services/`, выбор реализации в `services/index.ts`.
 - localStorage — только через `services/storage.ts` (там try/catch).

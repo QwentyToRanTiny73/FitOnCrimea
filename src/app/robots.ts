@@ -7,7 +7,7 @@ export const dynamic = "force-static";
 // файл не действует, на собственном домене — заработает.
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [{ userAgent: "*", allow: "/", disallow: ["/admin/", "/account/"] }],
+    rules: [{ userAgent: "*", allow: "/", disallow: ["/admin/"] }],
     sitemap: absoluteUrl("/sitemap.xml"),
   };
 }

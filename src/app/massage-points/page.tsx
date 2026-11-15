@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { MassageExplorer } from "@/components/massage/MassageExplorer";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Точки массажа с крымским бальзамом",
   description:
     "Интерактивная схема 26 акупунктурных точек для массажа с бальзамами «Фитон Крым»: показания, место на теле, методика и подходящие бальзамы.",
-};
+  path: "/massage-points/",
+});
 
 export default function MassagePointsPage() {
   return (

@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { Accordion } from "@/components/ui/Accordion";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { site } from "@/config/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Вопросы и ответы",
-  description: "Где купить бальзамы «Фитон Крым», из чего они сделаны, как выбрать и как применять.",
-};
+  description:
+    "Где купить бальзамы «Фитон Крым», из чего они сделаны, как выбрать и как применять.",
+  path: "/faq/",
+});
 
 // Ответы опираются на брошюру бренда. Добавляйте вопросы только с проверенными фактами.
 const FAQ: Array<{ q: string; a: string }> = [

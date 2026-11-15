@@ -14,13 +14,6 @@ export const HeartIcon = ({ className, filled }: IconProps & { filled?: boolean 
   </svg>
 );
 
-export const UserIcon = ({ className }: IconProps) => (
-  <svg viewBox="0 0 24 24" className={className} aria-hidden="true" {...stroke}>
-    <circle cx="12" cy="8" r="4" />
-    <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
-  </svg>
-);
-
 export const HomeIcon = ({ className }: IconProps) => (
   <svg viewBox="0 0 24 24" className={className} aria-hidden="true" {...stroke}>
     <path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z" />
@@ -33,6 +26,12 @@ export const CatalogIcon = ({ className }: IconProps) => (
     <rect x="13" y="4" width="7" height="7" rx="1.5" />
     <rect x="4" y="13" width="7" height="7" rx="1.5" />
     <rect x="13" y="13" width="7" height="7" rx="1.5" />
+  </svg>
+);
+
+export const PhoneIcon = ({ className }: IconProps) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden="true" {...stroke}>
+    <path d="M6.5 4h3l1.5 4-2 1.5a11 11 0 0 0 5.5 5.5l1.5-2 4 1.5v3a2 2 0 0 1-2 2A15 15 0 0 1 4.5 6a2 2 0 0 1 2-2Z" />
   </svg>
 );
 

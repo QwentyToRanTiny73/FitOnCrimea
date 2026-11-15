@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/catalog/ProductCard";
@@ -23,12 +24,12 @@ export function generateMetadata({ params }: PageProps): Metadata {
   const product = getProductBySlug(params.slug);
   if (!product) return { title: "Товар не найден" };
   const title = `${product.name} — ${product.tagline}`;
-  return {
-    title,
-    description: product.shortDescription,
-    alternates: { canonical: absoluteUrl(`/catalog/${product.slug}/`) },
-    openGraph: { title: `${title} | ${site.name}`, description: product.shortDescription },
-  };
+  const cover = product.images[0];
+  // Превью — JPEG-копия обложки товара (scripts/optimize-images.mjs), иначе общее.
+  const image = cover && /^\/products\/.+\.(?:webp|jpe?g|png)$/.test(cover)
+    ? { url: absoluteUrl(`/_img${cover.replace(/\.(?:webp|jpe?g|png)$/, "")}-og.jpg`), width: 800, height: 800, alt: title }
+    : undefined;
+  return pageMeta({ title, description: product.shortDescription, path: `/catalog/${product.slug}/`, image });
 }
 
 export default function ProductPage({ params }: PageProps) {
@@ -50,12 +51,10 @@ export default function ProductPage({ params }: PageProps) {
           brand: { "@type": "Brand", name: site.name },
           category: meta.label,
           ...(product.images[0] && { image: absoluteUrl(product.images[0]) }),
-          offers: {
-            "@type": "Offer",
-            priceCurrency: "RUB",
-            price: product.price,
-            url: hasOzonLink(product) ? product.ozonUrl : url,
-          },
+          // Предложение о продаже — только когда есть ссылка на Ozon, где товар реально купить.
+          ...(hasOzonLink(product) && {
+            offers: { "@type": "Offer", priceCurrency: "RUB", price: product.price, url: product.ozonUrl },
+          }),
         }}
       />
       <JsonLd

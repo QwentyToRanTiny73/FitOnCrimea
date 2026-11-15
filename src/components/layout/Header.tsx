@@ -4,15 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MAIN_NAV, site } from "@/config/site";
-import { useAdmin, useAuth, useFavorites } from "@/providers";
+import { useAdmin, useFavorites } from "@/providers";
 import { cn } from "@/lib/utils";
 import { Emblem } from "@/components/ui/Brochure";
-import { HeartIcon, MenuIcon, SearchIcon, UserIcon } from "@/components/ui/Icons";
+import { HeartIcon, MenuIcon, SearchIcon } from "@/components/ui/Icons";
 
 export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const { user } = useAuth();
   // Ссылка на кабинет видна только администратору, который уже вошёл.
   const { isAdmin } = useAdmin();
   const { count } = useFavorites();
@@ -63,13 +62,6 @@ export function Header() {
                 {count}
               </span>
             )}
-          </Link>
-          <Link
-            href="/account"
-            aria-label={user ? `Кабинет: ${user.name}` : "Войти"}
-            className="hidden h-10 w-10 items-center justify-center text-brand-green hover:text-brand-gold lg:flex"
-          >
-            <UserIcon className="h-5 w-5" />
           </Link>
           <button
             type="button"

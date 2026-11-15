@@ -36,7 +36,7 @@ export interface Product {
   contraindications: string;
   /** Ссылка на карточку Ozon. Пока не задана — кнопка покупки неактивна. */
   ozonUrl?: string;
-  /** Пути от корня public/ (`/products/<slug>.webp`), полные URL или data: (черновик админки). */
+  /** Пути от корня public/ (`/products/<slug>.webp`); data: — только в черновике админки. */
   images: string[];
   /** Слаги товаров для блока «Сочетается с». Без поля — товары той же зоны. */
   pairsWith?: string[];

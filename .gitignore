@@ -1,6 +1,8 @@
 node_modules
 .next
 out
+# уменьшенные копии картинок — делает scripts/optimize-images.mjs при сборке
+public/_img
 build
 dist
 coverage

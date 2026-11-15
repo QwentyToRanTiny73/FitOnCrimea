@@ -43,7 +43,15 @@ const COLUMNS: Col[] = [
 /** Пустая строка, пустой список, «нет» и отсутствие поля — одно и то же. */
 const isEmpty = (v: unknown) => v === undefined || v === "" || v === false || (Array.isArray(v) && v.length === 0);
 
-const quote = (v: string) => (/[;"\n\r]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
+/**
+ * Ячейка для Excel. Текст, начинающийся с = + - @, Excel принял бы за формулу —
+ * перед ним ставится апостроф (при загрузке таблицы он снимается).
+ */
+const quote = (raw: string) => {
+  const v = /^[=+\-@\t\r]/.test(raw) ? `'${raw}` : raw;
+  return /[;"\n\r]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+};
+const unformula = (v: string) => (/^'[=+\-@]/.test(v) ? v.slice(1) : v);
 
 export function productsToCsv(list: Product[]): string {
   const lines = [COLUMNS.map((c) => quote(c.header)).join(";")];
@@ -112,7 +120,7 @@ export function sheetToPatches(text: string, current: Product[]): SheetImport {
 
   rows.slice(1).forEach((cells, i) => {
     const line = i + 2;
-    const cellOf = (c: number) => (index[c] >= 0 ? (cells[index[c]] ?? "").trim() : undefined);
+    const cellOf = (c: number) => (index[c] >= 0 ? unformula((cells[index[c]] ?? "").trim()) : undefined);
     const name = cellOf(1);
     let slug = cellOf(0) || (name ? slugify(name) : "");
     if (!slug) return;

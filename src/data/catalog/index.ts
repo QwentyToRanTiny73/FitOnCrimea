@@ -1,6 +1,6 @@
 import { balms } from "./balms";
 import publishedOverrides from "./overrides.json";
-import { applyOverrides, sanitizeOverrideMap } from "./sanitize";
+import { OZON_RE, applyOverrides, sanitizeOverrideMap } from "./sanitize";
 import type { Product, ProductCategory } from "./types";
 
 export * from "./types";
@@ -12,7 +12,7 @@ export const baseProducts: Product[] = [...balms];
  * overrides.json — правки, опубликованные из админки (кнопкой «Опубликовать»
  * или вручную). Попадают в сборку для всех посетителей.
  */
-export const publishedMap = sanitizeOverrideMap(publishedOverrides as unknown);
+export const publishedMap = sanitizeOverrideMap(publishedOverrides as unknown, { allowData: false });
 
 /** Все товары, включая снятые с витрины (для админки и страниц товаров). */
 export const products: Product[] = applyOverrides(baseProducts, publishedMap);
@@ -27,7 +27,7 @@ export const getProductsByCategory = (category: ProductCategory): Product[] =>
   visibleProducts().filter((p) => p.category === category);
 
 export const hasOzonLink = (p: Pick<Product, "ozonUrl">): boolean =>
-  Boolean(p.ozonUrl && /^https?:\/\//.test(p.ozonUrl));
+  Boolean(p.ozonUrl && OZON_RE.test(p.ozonUrl));
 
 export const productSubtitle = (p: Pick<Product, "subtitle" | "name">): string =>
   p.subtitle?.trim() || `Крымский бальзам «${p.name}»`;
