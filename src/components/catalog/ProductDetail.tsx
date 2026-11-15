@@ -130,14 +130,14 @@ export function ProductDetail({ base }: { base: Product }) {
                 </p>
               </Accordion>
             )}
-            <Accordion title="Показания" defaultOpen={!product.description}>
+            <Accordion title="Когда пригодится" defaultOpen={!product.description}>
               {product.effect}
             </Accordion>
             <Accordion title="Способ применения">{product.application}</Accordion>
             <Accordion title="Состав">
               <p className="hyphens-auto font-serif leading-relaxed sm:text-justify">{compositionText(product.composition)}</p>
             </Accordion>
-            <Accordion title="Противопоказания">{product.contraindications}</Accordion>
+            <Accordion title="Меры предосторожности">{product.contraindications}</Accordion>
             <Accordion title="Хранение" className="border-b-0">
               Срок годности и условия хранения указаны на упаковке.
             </Accordion>

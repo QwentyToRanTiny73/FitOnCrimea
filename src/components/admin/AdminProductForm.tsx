@@ -279,11 +279,11 @@ export function AdminProductForm({
       </fieldset>
 
       {text("shortDescription", "Кратко (для карточки)", 2)}
-      {text("effect", "Показания", 3)}
+      {text("effect", "Когда пригодится", 3)}
       {text("description", "Описание (текст брошюры)", 5)}
       {text("composition", "Состав", 6, "По одному компоненту на строку")}
       {text("application", "Способ применения", 3)}
-      {text("contraindications", "Противопоказания", 2)}
+      {text("contraindications", "Меры предосторожности", 2)}
 
       <div>
         <p className="mb-2 text-sm text-brand-green/85">Фотографии — первая станет обложкой</p>

@@ -26,7 +26,7 @@ export const SUBCATEGORIES: SubcategoryMeta[] = [
   {
     key: "respiratory",
     label: "Дыхание",
-    hint: "Простуда, кашель, насморк",
+    hint: "Сезон простуд",
     text: "text-brand-green",
     tint: "bg-brand-green/5",
     gradient: "from-brand-green/15 to-brand-beige",
@@ -37,7 +37,7 @@ export const SUBCATEGORIES: SubcategoryMeta[] = [
   {
     key: "joints",
     label: "Суставы и мышцы",
-    hint: "Прогревание, обезболивание",
+    hint: "Тепло и комфорт",
     text: "text-brand-sea",
     tint: "bg-brand-sea/5",
     gradient: "from-brand-sea/15 to-brand-beige",
@@ -59,7 +59,7 @@ export const SUBCATEGORIES: SubcategoryMeta[] = [
   {
     key: "face",
     label: "Для лица",
-    hint: "Акне, пигментация, anti-age",
+    hint: "Проблемная кожа, пигментация, anti-age",
     text: "text-brand-poppy",
     tint: "bg-brand-poppy/5",
     gradient: "from-brand-poppy/15 to-brand-beige",

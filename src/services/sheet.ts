@@ -27,11 +27,11 @@ const COLUMNS: Col[] = [
   { header: "Вес", get: (p) => p.weight, set: (o, v) => (o.weight = v) },
   { header: "Ссылка Ozon", get: (p) => p.ozonUrl ?? "", set: (o, v) => (o.ozonUrl = v.trim()) },
   { header: "Кратко", get: (p) => p.shortDescription, set: (o, v) => (o.shortDescription = v) },
-  { header: "Показания", get: (p) => p.effect, set: (o, v) => (o.effect = v) },
+  { header: "Когда пригодится", get: (p) => p.effect, set: (o, v) => (o.effect = v) },
   { header: "Описание", get: (p) => p.description ?? "", set: (o, v) => (o.description = v) },
   { header: "Состав (через |)", get: (p) => p.composition.join(LIST), set: (o, v) => (o.composition = v.split("|").map((s) => s.trim()).filter(Boolean)) },
   { header: "Применение", get: (p) => p.application, set: (o, v) => (o.application = v) },
-  { header: "Противопоказания", get: (p) => p.contraindications, set: (o, v) => (o.contraindications = v) },
+  { header: "Меры предосторожности", get: (p) => p.contraindications, set: (o, v) => (o.contraindications = v) },
   {
     header: "Метки (хит, новинка)",
     get: (p) => (p.badges ?? []).map((b) => (b === "hit" ? "хит" : "новинка")).join(", "),

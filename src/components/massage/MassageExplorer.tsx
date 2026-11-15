@@ -325,7 +325,7 @@ function PointDetail({
 
       {balms.length > 0 && (
         <section className="mt-5">
-          <h3 className="font-serif text-lg font-bold text-brand-green">Бальзамы с такими показаниями</h3>
+          <h3 className="font-serif text-lg font-bold text-brand-green">Бальзамы для массажа</h3>
           <ul className="mt-2 space-y-2">
             {balms.map((p) => (
               <li key={p.slug}>

@@ -41,21 +41,21 @@ const TRUST = [
 const COLLECTIONS = [
   {
     title: "Сезон простуд",
-    text: "Чабрец, мирт, анис и лавр — при насморке, кашле и первых признаках простуды.",
+    text: "Чабрец, мирт, анис и лавр — ароматные бальзамы для сезона простуд.",
     href: "/catalog?cat=respiratory",
     slugs: ["chabretsovaya-zvezdochka", "ot-kashlya", "ot-nasmorka"],
     tone: "border-brand-green",
   },
   {
     title: "Суставы и спина",
-    text: "Прогревающие и обезболивающие бальзамы при ревматизме, радикулите, остеохондрозе.",
+    text: "Согревающие бальзамы для уставших мышц, суставов и спины.",
     href: "/catalog?cat=joints",
     slugs: ["progrevayushchiy", "obezbolivayushchiy", "zdorovye-sustavy"],
     tone: "border-brand-sea",
   },
   {
     title: "Уход за лицом",
-    text: "Против акне, для тонуса кожи и осветления пигментных пятен.",
+    text: "Для проблемной кожи, тонуса и осветления пигментных пятен.",
     href: "/catalog?cat=face",
     slugs: ["chistoe-lico", "limonnik-i-roza", "belosnezhka"],
     tone: "border-brand-poppy",
@@ -66,7 +66,7 @@ const LINE_SLOT: Record<string, DesignSlotKey> = { balm: "line-balm", soap: "lin
 
 const STEPS = [
   { n: "1", title: "Выберите бальзам", text: "По задаче, растению или симптому — в каталоге есть поиск." },
-  { n: "2", title: "Изучите карточку", text: "Показания, состав, способ применения и противопоказания." },
+  { n: "2", title: "Изучите карточку", text: "Для чего бальзам, состав, способ применения и меры предосторожности." },
   { n: "3", title: `Купите на ${site.marketplace.name}`, text: "Кнопка в карточке ведёт прямо к товару на маркетплейсе." },
 ];
 
@@ -183,9 +183,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 6. Подборки по показаниям */}
+      {/* 6. Подборки по задачам */}
       <section className="mx-auto max-w-6xl px-4 pb-12 sm:px-6 sm:pb-16">
-        <SectionHeading eyebrow="Подборки" title="По показаниям" />
+        <SectionHeading eyebrow="Подборки" title="По задачам" />
         <div className="grid gap-4 md:grid-cols-3">
           {COLLECTIONS.map((c, i) => (
             <Reveal key={c.title} delay={i * 100}>
@@ -263,8 +263,8 @@ export default function HomePage() {
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.25em] text-brand-gold">Схема применения</p>
             <h2 className="title-crimson font-serif text-2xl font-bold uppercase sm:text-3xl">26 точек для массажа с бальзамом</h2>
             <p className="mt-4 text-brand-green/85">
-              Карта акупунктурных точек из брошюры бренда: при насморке и головной боли, бессоннице,
-              радикулите, межрёберной невралгии и других состояниях.
+              Карта акупунктурных точек из брошюры бренда: какие точки массируют с бальзамом
+              и где они находятся. Схема справочная и не заменяет обращение к врачу.
             </p>
             <Link
               href="/massage-points"

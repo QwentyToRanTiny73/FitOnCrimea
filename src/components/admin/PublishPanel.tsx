@@ -23,11 +23,11 @@ const FIELD_LABELS: Record<string, string> = {
   hidden: "видимость",
   ozonUrl: "ссылка Ozon",
   shortDescription: "кратко",
-  effect: "показания",
+  effect: "когда пригодится",
   description: "описание",
   composition: "состав",
   application: "применение",
-  contraindications: "противопоказания",
+  contraindications: "меры предосторожности",
   images: "фото",
   pairsWith: "подборка",
 };
