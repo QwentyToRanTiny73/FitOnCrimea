@@ -9,10 +9,12 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { site } from "@/config/site";
 import { absoluteUrl, assetUrl } from "@/lib/utils";
 import { Providers } from "@/providers";
+import { OG_DEFAULT } from "@/lib/seo";
 
 // Классическая русская книжная антиква — для заголовков, как в брошюре.
+// Предзагружается только кириллица: латинские буквы (Ozon и т. п.) подгружаются по мере надобности.
 const serif = Old_Standard_TT({
-  subsets: ["latin", "cyrillic"],
+  subsets: ["cyrillic"],
   weight: ["400", "700"],
   style: ["normal", "italic"],
   variable: "--font-serif",
@@ -21,7 +23,7 @@ const serif = Old_Standard_TT({
 
 // Узкие «старорусские» буквы — для крупного заголовка, как на обложке.
 const display = Ruslan_Display({
-  subsets: ["latin", "cyrillic"],
+  subsets: ["cyrillic"],
   weight: "400",
   variable: "--font-display",
   display: "swap",
@@ -41,13 +43,14 @@ export const metadata: Metadata = {
   },
   description: site.description,
   icons: { icon: assetUrl("/logo.svg") },
+  // Свои canonical, og:url и превью задаёт каждая страница через pageMeta (src/lib/seo.ts).
   openGraph: {
     type: "website",
     siteName: site.name,
     locale: "ru_RU",
-    url: absoluteUrl("/"),
     title: `${site.name} — ${site.title.toLowerCase()}`,
     description: site.description,
+    images: [OG_DEFAULT],
   },
   robots: { index: true, follow: true },
 };

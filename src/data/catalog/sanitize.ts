@@ -15,7 +15,18 @@ const strList = (v: unknown) =>
 
 export const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-export function sanitizeOverride(raw: unknown): ProductOverride {
+/** Ссылка на товар или магазин Ozon: только https и домен ozon.ru. */
+export const OZON_RE = /^https:\/\/(?:www\.)?ozon\.ru\/[^\s"'<>\\]*$/i;
+/** Фото товара: файл сайта или (только в черновике админки) data:-картинка. */
+const IMAGE_PATH_RE = /^\/(?:products|design|brochure)\/[A-Za-z0-9._-]+\.(?:webp|jpe?g|png)$/;
+const IMAGE_DATA_RE = /^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
+
+export interface SanitizeOptions {
+  /** data:-картинки допустимы только в черновиках браузера, не в опубликованном JSON. */
+  allowData?: boolean;
+}
+
+export function sanitizeOverride(raw: unknown, { allowData = true }: SanitizeOptions = {}): ProductOverride {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
   const r = raw as Record<string, unknown>;
   const o: ProductOverride = {};
@@ -23,26 +34,32 @@ export function sanitizeOverride(raw: unknown): ProductOverride {
     const v = str(r[k]);
     if (v !== undefined) o[k] = v;
   }
-  if (typeof r.ozonUrl === "string") o.ozonUrl = r.ozonUrl.trim() || undefined;
+  if (typeof r.ozonUrl === "string") {
+    const url = r.ozonUrl.trim();
+    if (!url) o.ozonUrl = undefined;
+    else if (OZON_RE.test(url)) o.ozonUrl = url;
+  }
   const price = typeof r.price === "string" ? Number(r.price.replace(",", ".")) : r.price;
   if (typeof price === "number" && Number.isFinite(price) && price >= 0) o.price = Math.round(price);
   if (CATEGORIES.includes(r.category as ProductCategory)) o.category = r.category as ProductCategory;
   if (SUBCATEGORIES.includes(r.subcategory as ProductSubcategory)) o.subcategory = r.subcategory as ProductSubcategory;
   const badges = strList(r.badges)?.filter((b): b is ProductBadge => BADGES.includes(b as ProductBadge));
   if (badges) o.badges = badges;
-  for (const k of ["composition", "images", "pairsWith"] as const) {
+  for (const k of ["composition", "pairsWith"] as const) {
     const v = strList(r[k]);
     if (v) o[k] = v;
   }
+  const images = strList(r.images)?.filter((src) => IMAGE_PATH_RE.test(src) || (allowData && IMAGE_DATA_RE.test(src)));
+  if (images) o.images = images;
   if (typeof r.hidden === "boolean") o.hidden = r.hidden;
   return o;
 }
 
-export function sanitizeOverrideMap(raw: unknown): OverrideMap {
+export function sanitizeOverrideMap(raw: unknown, opts: SanitizeOptions = {}): OverrideMap {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
   const out: OverrideMap = {};
   for (const [slug, v] of Object.entries(raw as Record<string, unknown>)) {
-    if (SLUG_RE.test(slug)) out[slug] = sanitizeOverride(v);
+    if (SLUG_RE.test(slug)) out[slug] = sanitizeOverride(v, opts);
   }
   return out;
 }

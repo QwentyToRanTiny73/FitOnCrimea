@@ -44,7 +44,7 @@ src/
     slots.ts            места на сайте, где картинку можно заменить из кабинета
     overrides.json      оформление, опубликованное из кабинета (картинки, баннеры)
   providers/            состояние: администратор, покупатель, избранное, черновики товаров и оформления
-  services/             admin-vault (вход), auth, github, publisher, sheet (Excel), image-upload, storage
+  services/             admin-vault (вход), github, publisher, sheet (Excel), image-upload, storage
 scripts/                проверка сборки
 public/                 massage-points.jpg, logo.svg, brochure/, products/, design/ (из кабинета)
 ```
@@ -88,6 +88,11 @@ Permissions: **Contents: Read and write** → Generate.
 | Картинки оформления и баннеры | через кабинет → «Оформление» (попадают в `public/design/`) | JPEG или PNG; размер подсказан у каждого места |
 | Иллюстрации брошюры | `public/brochure/` (описаны в `src/config/brochure.ts`) | WebP |
 | Логотип | `public/logo.svg` | SVG |
+| Превью ссылок (og:image) | `public/og-image.jpg` | JPEG 1200×630 |
+
+Уменьшенные копии (96–1280 px, WebP) и превью товаров для мессенджеров делает
+`scripts/optimize-images.mjs` перед каждой сборкой — в `public/_img/`, в git не попадают.
+На телефоне браузер берёт копию нужной ширины, а не оригинал.
 
 В коде локальные картинки подключаются только через `assetUrl("/путь")` — иначе на GitHub Pages
 они потеряют префикс `/FitOnCrimea` и не загрузятся.
@@ -117,7 +122,6 @@ Permissions: **Contents: Read and write** → Generate.
 
 | Сервис | Сейчас | Чем заменить |
 |---|---|---|
-| `auth` — вход, регистрация | данные в браузере посетителя | Supabase Auth, Яндекс ID, Auth.js |
 | `catalogStore` — черновики админки | браузер администратора | — |
 | `designStore` — черновики оформления | браузер администратора | — |
 | `publisher` — публикация | GitHub API (коммит в репозиторий) | любой CMS с API |
@@ -126,21 +130,16 @@ Permissions: **Contents: Read and write** → Generate.
 Замена = новая реализация того же интерфейса + одна строка в `services/index.ts`.
 Страницы и компоненты при этом не меняются.
 
-## Деплой (GitHub Pages)
+## Деплой
 
-Workflow `.github/workflows/nextjs.yml` срабатывает при пуше в `main`: проверяет код,
-собирает сайт, проверяет результат (`scripts/verify-export.mjs`) и публикует `out/`.
+Workflow `.github/workflows/nextjs.yml` срабатывает при пуше в `main`: проверяет код, собирает
+сайт, проверяет результат (`scripts/verify-export.mjs`) и выкладывает `out/`:
 
-Настройка репозитория (один раз): **Settings → Pages → Source: GitHub Actions.**
-Если после обновления сайт на минуту-две показывает README, источник стоит «Deploy from a branch»:
-в Actions у каждого пуша тогда два запуска — наш «Deploy to GitHub Pages» и чужой «pages build and
-deployment». Сборка в этом случае выводит предупреждение «Неверный источник GitHub Pages».
-Секреты для входа не нужны: логин и пароль администратор задаёт сам в `/admin`.
-Если в Settings → Secrets остались `ADMIN_PASSWORD_HASH`, `ADMIN_EMAIL`, переменная `ADMIN_LOGIN` —
-их можно удалить, сайт их больше не читает.
+- **свой домен на REG.RU** — если в переменных репозитория `DEPLOY_TARGET = regru`. Файлы уходят
+  по FTPS скриптом `scripts/deploy-ftp.py`. Пошагово: [docs/DEPLOY-REGRU.md](docs/DEPLOY-REGRU.md);
+- **GitHub Pages** — во всех остальных случаях (Settings → Pages → Source: GitHub Actions).
 
-Свой домен: Settings → Pages → Custom domain → `phyton-crimea.ru`, у регистратора
-CNAME на `qwentytorantiny73.github.io`. Префикс `/FitOnCrimea` уберётся автоматически.
+Секреты для входа администратора не нужны: логин и пароль задаются в `/admin`.
 
 ## Перед публичным запуском
 

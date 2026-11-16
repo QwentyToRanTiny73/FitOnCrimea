@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { StampImage } from "@/components/ui/Brochure";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { STAMPS } from "@/config/brochure";
 import { site } from "@/config/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Контакты",
-  description: `Как связаться с «${site.name}» и где купить продукцию бренда.`,
-};
+  description:
+    `Как связаться с «${site.name}» и где купить продукцию бренда.`,
+  path: "/contacts/",
+});
 
 export default function ContactsPage() {
   const { contacts, marketplace } = site;

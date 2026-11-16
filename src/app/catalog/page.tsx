@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { Suspense } from "react";
 import { CatalogView } from "@/components/catalog/CatalogView";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Каталог",
   description:
     "Бальзамы «Фитон Крым» на крымских травах: дыхание, суставы, кожа лица и тела, волосы. Поиск по растению и показанию.",
-};
+  path: "/catalog/",
+});
 
 export default function CatalogPage() {
   return (

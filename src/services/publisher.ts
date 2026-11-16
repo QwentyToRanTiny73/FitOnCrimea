@@ -74,7 +74,7 @@ export async function publishChanges(
 
   if (slugs.length) {
     onStep("Читаю опубликованный каталог…");
-    const remote: OverrideMap = sanitizeOverrideMap(await readJsonFile(token, repo, OVERRIDES_PATH));
+    const remote: OverrideMap = sanitizeOverrideMap(await readJsonFile(token, repo, OVERRIDES_PATH), { allowData: false });
     const merged: OverrideMap = { ...remote };
     for (const slug of slugs) {
       const patch = { ...changes.catalog[slug] };

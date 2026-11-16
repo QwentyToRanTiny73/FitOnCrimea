@@ -32,7 +32,7 @@ const QUICK: Array<{ label: string; q?: string; cat?: ProductSubcategory }> = [
   { label: "Насморк", q: "насморк" },
   { label: "Суставы", cat: "joints" },
   { label: "Ожоги", q: "ожог" },
-  { label: "Акне", q: "акне" },
+  { label: "Прыщи и угри", q: "прыщи" },
   { label: "Трещины пяток", q: "трещины" },
   { label: "Комары", q: "комар" },
   { label: "Сон и стресс", cat: "other" },

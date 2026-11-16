@@ -5,6 +5,8 @@ import { Emblem, Meadow } from "@/components/ui/Brochure";
 
 export function Footer() {
   const { contacts, marketplace } = site;
+  const op = site.legal.operator;
+  const requisites = [op.name, op.inn && `ИНН ${op.inn}`, op.ogrn && `ОГРН ${op.ogrn}`].filter(Boolean).join(", ");
   return (
     <footer className="relative mt-20 bg-brand-green text-brand-beige">
       {/* золотые травы над подвалом, как внизу страниц брошюры */}
@@ -67,6 +69,8 @@ export function Footer() {
         <div className="mx-auto flex max-w-6xl flex-col justify-between gap-2 px-4 py-4 text-xs text-brand-beige/60 sm:flex-row sm:px-6">
           <span>
             © {site.since}–{new Date().getFullYear()} ТМ «{site.name}»
+            {/* Реквизиты продавца — из site.legal.operator, появятся после заполнения. */}
+            {requisites && <span className="mt-1 block text-brand-beige/50">{requisites}</span>}
           </span>
           <span className="flex gap-4">
             <Link href="/privacy" className="hover:text-brand-amber">

@@ -27,11 +27,11 @@ const COLUMNS: Col[] = [
   { header: "Вес", get: (p) => p.weight, set: (o, v) => (o.weight = v) },
   { header: "Ссылка Ozon", get: (p) => p.ozonUrl ?? "", set: (o, v) => (o.ozonUrl = v.trim()) },
   { header: "Кратко", get: (p) => p.shortDescription, set: (o, v) => (o.shortDescription = v) },
-  { header: "Показания", get: (p) => p.effect, set: (o, v) => (o.effect = v) },
+  { header: "Когда пригодится", get: (p) => p.effect, set: (o, v) => (o.effect = v) },
   { header: "Описание", get: (p) => p.description ?? "", set: (o, v) => (o.description = v) },
   { header: "Состав (через |)", get: (p) => p.composition.join(LIST), set: (o, v) => (o.composition = v.split("|").map((s) => s.trim()).filter(Boolean)) },
   { header: "Применение", get: (p) => p.application, set: (o, v) => (o.application = v) },
-  { header: "Противопоказания", get: (p) => p.contraindications, set: (o, v) => (o.contraindications = v) },
+  { header: "Меры предосторожности", get: (p) => p.contraindications, set: (o, v) => (o.contraindications = v) },
   {
     header: "Метки (хит, новинка)",
     get: (p) => (p.badges ?? []).map((b) => (b === "hit" ? "хит" : "новинка")).join(", "),
@@ -43,7 +43,15 @@ const COLUMNS: Col[] = [
 /** Пустая строка, пустой список, «нет» и отсутствие поля — одно и то же. */
 const isEmpty = (v: unknown) => v === undefined || v === "" || v === false || (Array.isArray(v) && v.length === 0);
 
-const quote = (v: string) => (/[;"\n\r]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
+/**
+ * Ячейка для Excel. Текст, начинающийся с = + - @, Excel принял бы за формулу —
+ * перед ним ставится апостроф (при загрузке таблицы он снимается).
+ */
+const quote = (raw: string) => {
+  const v = /^[=+\-@\t\r]/.test(raw) ? `'${raw}` : raw;
+  return /[;"\n\r]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+};
+const unformula = (v: string) => (/^'[=+\-@]/.test(v) ? v.slice(1) : v);
 
 export function productsToCsv(list: Product[]): string {
   const lines = [COLUMNS.map((c) => quote(c.header)).join(";")];
@@ -112,7 +120,7 @@ export function sheetToPatches(text: string, current: Product[]): SheetImport {
 
   rows.slice(1).forEach((cells, i) => {
     const line = i + 2;
-    const cellOf = (c: number) => (index[c] >= 0 ? (cells[index[c]] ?? "").trim() : undefined);
+    const cellOf = (c: number) => (index[c] >= 0 ? unformula((cells[index[c]] ?? "").trim()) : undefined);
     const name = cellOf(1);
     let slug = cellOf(0) || (name ? slugify(name) : "");
     if (!slug) return;

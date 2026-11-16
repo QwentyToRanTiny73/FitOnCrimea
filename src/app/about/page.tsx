@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
 import { Emblem, Ribbon, StampImage } from "@/components/ui/Brochure";
@@ -10,10 +11,12 @@ import { site } from "@/config/site";
 import { visibleProducts } from "@/data/catalog";
 import { assetUrl } from "@/lib/utils";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "О бренде",
-  description: `«${site.name}» — натуральная косметика на крымских травах с ${site.since} года: серия «Крымский бальзам», мыло ручной работы, бальзамы для губ.`,
-};
+  description:
+    `«${site.name}» — натуральная косметика на крымских травах с ${site.since} года: серия «Крымский бальзам», мыло ручной работы, бальзамы для губ.`,
+  path: "/about/",
+});
 
 const GALLERY = [STAMPS.road, STAMPS.karadag, STAMPS.window, STAMPS.swallowNest, STAMPS.lighthouse, STAMPS.car];
 

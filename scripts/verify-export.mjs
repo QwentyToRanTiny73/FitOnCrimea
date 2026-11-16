@@ -41,6 +41,12 @@ try {
   errors.push(`src/data/design/overrides.json не читается: ${e.message}`);
 }
 
+// Реквизиты оператора (site.legal.operator) — предупреждение, сборку не останавливает.
+const warnings = [];
+if (existsSync(join(OUT, "privacy/index.html")) && readFileSync(join(OUT, "privacy/index.html"), "utf8").includes('data-legal="missing"')) {
+  warnings.push("не заполнены реквизиты продавца и оператора ПД (src/config/site.ts → legal.operator) — заполнить до запуска");
+}
+
 const productPages = existsSync(join(OUT, "catalog"))
   ? readdirSync(join(OUT, "catalog"), { withFileTypes: true }).filter((d) => d.isDirectory()).length
   : 0;
@@ -61,8 +67,26 @@ if (existsSync(join(OUT, "index.html"))) {
   }
 }
 
+// Уменьшенные копии картинок (/_img/…), на которые ссылаются страницы, должны быть в out/.
+const htmlFiles = (dir) =>
+  readdirSync(dir, { withFileTypes: true }).flatMap((d) =>
+    d.isDirectory() ? htmlFiles(join(dir, d.name)) : d.name.endsWith(".html") ? [join(dir, d.name)] : []
+  );
+const missingImg = new Set();
+for (const f of existsSync(OUT) ? htmlFiles(OUT) : []) {
+  const html = readFileSync(f, "utf8");
+  for (const m of html.matchAll(/\/_img\/[^"'\s,)]+?\.(?:webp|jpg)/g)) {
+    const rel = m[0];
+    if (!existsSync(join(OUT, rel))) missingImg.add(rel);
+  }
+  // В CI адрес сайта обязан прийти из переменной окружения, а не быть локальным.
+  if (process.env.CI && html.includes("http://localhost:3000")) errors.push(`${f}: адрес сайта не задан (NEXT_PUBLIC_SITE_URL)`);
+}
+if (missingImg.size) errors.push(`нет уменьшенных копий картинок: ${[...missingImg].slice(0, 5).join(", ")}`);
+
 if (errors.length) {
   console.error("Проверка out/ не пройдена:\n- " + errors.join("\n- "));
   process.exit(1);
 }
+for (const w of warnings) console.warn(`Внимание: ${w}`);
 console.log(`out/ в порядке: страниц товаров ${productPages}, basePath "${basePath}"`);

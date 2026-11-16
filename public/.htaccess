@@ -1,0 +1,33 @@
+# Настройки для хостинга с Apache (REG.RU и подобные). На GitHub Pages файл не действует.
+# Только директивы, которые обычно разрешены на виртуальном хостинге; каждая — в IfModule,
+# чтобы отсутствие модуля не роняло сайт.
+
+# Своя страница «не найдено»
+ErrorDocument 404 /404.html
+
+<IfModule mod_headers.c>
+  # Защита кабинета и посетителей: сайт нельзя встроить в чужую страницу,
+  # скрипты и картинки грузятся только со своего адреса, запросы — только к GitHub (публикация из кабинета).
+  # При подключении счётчика (Яндекс.Метрика) его адреса нужно добавить в script-src, img-src и connect-src.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.github.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+  Header always set X-Frame-Options "DENY"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set Strict-Transport-Security "max-age=31536000" env=HTTPS
+
+  # Файлы с хэшем в имени не меняются — браузер может хранить их год.
+  <FilesMatch "\.(?:js|css|woff2)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.(?:webp|jpg|jpeg|png|svg)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=300"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml text/xml application/xml
+</IfModule>

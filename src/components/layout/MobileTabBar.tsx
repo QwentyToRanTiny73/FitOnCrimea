@@ -2,22 +2,21 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAuth, useFavorites } from "@/providers";
+import { useFavorites } from "@/providers";
 import { cn } from "@/lib/utils";
-import { CatalogIcon, HeartIcon, HomeIcon, PointsIcon, UserIcon } from "@/components/ui/Icons";
+import { CatalogIcon, HeartIcon, HomeIcon, PhoneIcon, PointsIcon } from "@/components/ui/Icons";
 
 /** Нижнее меню на телефонах — основные разделы под большим пальцем. */
 export function MobileTabBar() {
   const pathname = usePathname();
   const { count } = useFavorites();
-  const { user } = useAuth();
 
   const tabs = [
     { href: "/", label: "Главная", Icon: HomeIcon, exact: true },
     { href: "/catalog", label: "Каталог", Icon: CatalogIcon },
     { href: "/massage-points", label: "Точки", Icon: PointsIcon },
     { href: "/favorites", label: "Избранное", Icon: HeartIcon, badge: count },
-    { href: "/account", label: user ? "Кабинет" : "Войти", Icon: UserIcon },
+    { href: "/contacts", label: "Контакты", Icon: PhoneIcon },
   ];
 
   return (

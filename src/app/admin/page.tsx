@@ -23,6 +23,17 @@ export default function AdminPage() {
   const [filter, setFilter] = useState<Filter>("all");
   const [open, setOpen] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  // Кабинет нельзя показывать внутри чужой страницы: так подсовывают нажатия
+  // (GitHub Pages не даёт поставить заголовок X-Frame-Options).
+  const [framed, setFramed] = useState(false);
+
+  useEffect(() => {
+    try {
+      setFramed(window.top !== window.self);
+    } catch {
+      setFramed(true);
+    }
+  }, []);
 
   useEffect(() => {
     const read = () => {
@@ -43,6 +54,17 @@ export default function AdminPage() {
     window.scrollTo({ top: 0 });
   }, []);
 
+  if (framed) {
+    return (
+      <p className="p-6 text-center text-sm">
+        Кабинет администратора открывается только в отдельной вкладке:{" "}
+        <a href={window.location.href} target="_top" rel="noopener" className="underline">
+          открыть
+        </a>
+        .
+      </p>
+    );
+  }
   if (!ready || !isAdmin) return <AdminAuth />;
 
   return (

@@ -2,7 +2,7 @@
 
 import { DragEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import { BADGE_LABELS, CATEGORIES, SUBCATEGORIES } from "@/config/categories";
-import { SLUG_RE, slugify } from "@/data/catalog/sanitize";
+import { OZON_RE, SLUG_RE, slugify } from "@/data/catalog/sanitize";
 import { products as publishedProducts } from "@/data/catalog";
 import type { Product, ProductBadge, ProductCategory, ProductOverride, ProductSubcategory } from "@/data/catalog";
 import { useCatalog } from "@/providers";
@@ -171,6 +171,9 @@ export function AdminProductForm({
   function onSubmit(e: FormEvent) {
     e.preventDefault();
     const data = toOverride(form);
+    if (form.ozonUrl.trim() && !OZON_RE.test(form.ozonUrl.trim())) {
+      return setStatus({ tone: "error", text: "Ссылка Ozon должна начинаться с https://www.ozon.ru/ или https://ozon.ru/." });
+    }
     try {
       if (isCreate) {
         const slug = form.slug.trim();
@@ -276,11 +279,11 @@ export function AdminProductForm({
       </fieldset>
 
       {text("shortDescription", "Кратко (для карточки)", 2)}
-      {text("effect", "Показания", 3)}
+      {text("effect", "Когда пригодится", 3)}
       {text("description", "Описание (текст брошюры)", 5)}
       {text("composition", "Состав", 6, "По одному компоненту на строку")}
       {text("application", "Способ применения", 3)}
-      {text("contraindications", "Противопоказания", 2)}
+      {text("contraindications", "Меры предосторожности", 2)}
 
       <div>
         <p className="mb-2 text-sm text-brand-green/85">Фотографии — первая станет обложкой</p>

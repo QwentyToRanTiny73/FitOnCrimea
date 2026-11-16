@@ -1,6 +1,8 @@
-# Сборка и публикация сайта на GitHub Pages.
-# Settings → Pages → Source должен быть «GitHub Actions».
-name: Deploy to GitHub Pages
+# Сборка и публикация сайта. Куда публиковать, решает переменная репозитория
+# DEPLOY_TARGET (Settings → Secrets and variables → Actions → Variables):
+#   не задана  — GitHub Pages (Settings → Pages → Source должен быть «GitHub Actions»);
+#   regru      — свой домен на хостинге REG.RU по FTP, см. docs/DEPLOY-REGRU.md.
+name: Deploy site
 
 on:
   push:
@@ -19,6 +21,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      TARGET: ${{ vars.DEPLOY_TARGET == 'regru' && 'regru' || 'pages' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -28,15 +32,17 @@ jobs:
           cache: npm
 
       # Без static_site_generator: конфиг Next.js настроен вручную.
-      # Действие отдаёт base_path и base_url — они верны и для github.io, и для своего домена.
+      # Действие отдаёт base_path и base_url — они верны для github.io.
       - id: pages
+        if: env.TARGET == 'pages'
         uses: actions/configure-pages@v5
 
-      # Публиковать сайт должен только этот workflow. Если в Settings → Pages → Source
+      # Публиковать на Pages должен только этот workflow. Если в Settings → Pages → Source
       # остался «Deploy from a branch», GitHub при каждом пуше параллельно собирает
       # README (запуск «pages build and deployment»), и сайт 1–2 минуты показывает его.
       # Шаг ничего не ломает: только предупреждает на странице запуска.
       - name: Check Pages source
+        if: env.TARGET == 'pages'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -55,23 +61,39 @@ jobs:
       - name: Lint and typecheck
         run: npm run lint && npm run typecheck
 
+      # На github.io сайт живёт в подпапке (/FitOnCrimea), на своём домене — в корне.
       - name: Build
         env:
-          NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
-          NEXT_PUBLIC_SITE_URL: ${{ steps.pages.outputs.base_url }}
-          # Куда админка публикует правки и фото
+          NEXT_PUBLIC_BASE_PATH: ${{ env.TARGET == 'pages' && steps.pages.outputs.base_path || '' }}
+          NEXT_PUBLIC_SITE_URL: ${{ env.TARGET == 'pages' && steps.pages.outputs.base_url || vars.SITE_URL }}
+          # Куда кабинет публикует правки и фото
           NEXT_PUBLIC_GITHUB_REPO: ${{ github.repository }}
           NEXT_PUBLIC_GITHUB_BRANCH: ${{ github.ref_name }}
         run: npm run build
 
       - name: Verify static output
+        env:
+          NEXT_PUBLIC_BASE_PATH: ${{ env.TARGET == 'pages' && steps.pages.outputs.base_path || '' }}
         run: npm run verify
 
-      - uses: actions/upload-pages-artifact@v3
+      - if: env.TARGET == 'pages'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: out
 
+      # Свой домен: файлы уходят на хостинг по FTPS. Доступ — в секретах репозитория.
+      - name: Deploy to hosting (FTP)
+        if: env.TARGET == 'regru'
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_DIR: ${{ vars.FTP_DIR }}
+          FTP_TLS: ${{ vars.FTP_TLS }}
+        run: python3 scripts/deploy-ftp.py out
+
   deploy:
+    if: vars.DEPLOY_TARGET != 'regru'
     needs: build
     runs-on: ubuntu-latest
     environment:
