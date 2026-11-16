@@ -130,21 +130,16 @@ Permissions: **Contents: Read and write** → Generate.
 Замена = новая реализация того же интерфейса + одна строка в `services/index.ts`.
 Страницы и компоненты при этом не меняются.
 
-## Деплой (GitHub Pages)
+## Деплой
 
-Workflow `.github/workflows/nextjs.yml` срабатывает при пуше в `main`: проверяет код,
-собирает сайт, проверяет результат (`scripts/verify-export.mjs`) и публикует `out/`.
+Workflow `.github/workflows/nextjs.yml` срабатывает при пуше в `main`: проверяет код, собирает
+сайт, проверяет результат (`scripts/verify-export.mjs`) и выкладывает `out/`:
 
-Настройка репозитория (один раз): **Settings → Pages → Source: GitHub Actions.**
-Если после обновления сайт на минуту-две показывает README, источник стоит «Deploy from a branch»:
-в Actions у каждого пуша тогда два запуска — наш «Deploy to GitHub Pages» и чужой «pages build and
-deployment». Сборка в этом случае выводит предупреждение «Неверный источник GitHub Pages».
-Секреты для входа не нужны: логин и пароль администратор задаёт сам в `/admin`.
-Если в Settings → Secrets остались `ADMIN_PASSWORD_HASH`, `ADMIN_EMAIL`, переменная `ADMIN_LOGIN` —
-их можно удалить, сайт их больше не читает.
+- **свой домен на REG.RU** — если в переменных репозитория `DEPLOY_TARGET = regru`. Файлы уходят
+  по FTPS скриптом `scripts/deploy-ftp.py`. Пошагово: [docs/DEPLOY-REGRU.md](docs/DEPLOY-REGRU.md);
+- **GitHub Pages** — во всех остальных случаях (Settings → Pages → Source: GitHub Actions).
 
-Свой домен: Settings → Pages → Custom domain → `phyton-crimea.ru`, у регистратора
-CNAME на `qwentytorantiny73.github.io`. Префикс `/FitOnCrimea` уберётся автоматически.
+Секреты для входа администратора не нужны: логин и пароль задаются в `/admin`.
 
 ## Перед публичным запуском
 

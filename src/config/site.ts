@@ -13,9 +13,9 @@ export const site = {
    * из NEXT_PUBLIC_SITE_URL. Без переменной — локальный адрес; проверка out/ в CI
    * не пропустит такую сборку.
    */
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, ""),
+  url: (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, ""),
   /** Префикс путей: "/FitOnCrimea" на github.io, "" на собственном домене. */
-  basePath: process.env.NEXT_PUBLIC_BASE_PATH ?? "",
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH || "",
   /** Контакты из брошюры бренда. Удалите поле — блок пропадёт с сайта. */
   contacts: {
     email: "crimean.soap@gmail.com",
